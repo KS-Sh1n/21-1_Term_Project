@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+    <h3>Add site data in this page.</h3>
+    <form method="POST">
+        <label for="=sitename">sitename</label>
+        <input type="text" id="sitename" name="sitename"><br>
+    
+        <label for="=main_address">main_address</label>
+        <input type="text" id="main_address" name="main_address" ><br>
+    
+        <label for="=scrape_address">scrape_address</label>
+        <input type="text" id="scrape_address" name="scrape_address"><br>
+    
+        <label for="=sitetype">sitetype</label>
+        <input type="text" id="sitetype" name="sitetype"><br>
+
+        <label for="=list_query">list_query</label>
+        <input type="text" id="list_query" name="list_query"><br>
+
+        <label for="=link_query">link_query</label>
+        <input type="text" id="link_query" name="link_query"><br>
+
+        <label for="=postnum_query">postnum_query</label>
+        <input type="text" id="postnum_query" name="postnum_query"><br>
+
+        <label for="=title_query">title_query</label>
+        <input type="text" id="title_query" name="title_query"><br>
+
+        <label for="=author_query">author_query</label>
+        <input type="text" id="author_query" name="author_query"><br>
+
+        <label for="=js_included">js_included (0 or 1)</label>
+        <input type="checkbox" name="js_included"><br>
+
+        <input type="submit" name="add" value="add">
+        <input type="submit" name="delete" value="delete">
+        <input type="submit" name="reset" value="reset"><br>
+
+        Error : {{msg}}
+        <br>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <br>
+        <button><a href={{ url_for("index") }}>mainpage</a></button><br>
+    </form>
+</body>

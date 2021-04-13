@@ -9,45 +9,11 @@ def get_db():
         db = g._database = sqlite3.connect(current_app.config['DATABASE'])
     return db
 
-def init_db():
-    with current_app.app_context():
-        db = get_db()
-
-def create_site_feed(sitename, type):
-
-    site_feed_query = (
-        "CREATE TABLE {0} ".format(sitename) +
-        "(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-        "sitename TEXT DEFAULT " + sitename +  "," 
-        "type TEXT DEFAULT " + type +  ","
-        "postdate TEXT,"
-        "postnum INTEGER,"
-        "title TEXT,"
-        "author TEXT,"
-        "link TEXT)")
-    return site_feed_query
-
-def create_site_data():
-    
-    site_data_query = (
-        "CREATE TABLE sitedata "
-        "(sitename TEXT ," 
-        "main_address TEXT ,"
-        "scrape_address TEXT,"
-        "sitetype TEXT,"
-        "list_query TEXT,"
-        "link_query TEXT,"
-        "postnum_query INTEGER,"
-        "title_query TEXT,"
-        "author_query TEXT,"
-        "js_included INTEGER)")
-    return site_data_query
-
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
     """Clear the existing data and create new tables."""
-    init_db()
+    get_db()
     click.echo('Initialized the database.')
 
 def init_app(app):
@@ -58,3 +24,33 @@ def close_connection(e=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
+
+site_data_query = (
+    "CREATE TABLE IF NOT EXISTS sitedata "
+    "(sitename TEXT NOT NULL," 
+    "main_address TEXT NOT NULL,"
+    "scrape_address TEXT NOT NULL,"
+    "sitetype TEXT NOT NULL,"
+    "list_query TEXT NOT NULL,"
+    "link_query TEXT NOT NULL,"
+    "postnum_query INTEGER NOT NULL,"
+    "title_query TEXT NOT NULL,"
+    "author_query TEXT NOT NULL,"
+    "js_included INTEGER)")
+
+site_feed_query = (
+    "CREATE TABLE IF NOT EXISTS sitefeed "
+    "(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+    "sitename TEXT NOT NULL," 
+    "sitetype TEXT NOT NULL,"
+    "postdate TEXT NOT NULL,"
+    "postnum INTEGER NOT NULL,"
+    "title TEXT NOT NULL,"
+    "author TEXT NOT NULL,"
+    "link TEXT NOT NULL)")
+
+insert_feed_query = (
+    "INSERT INTO sitefeed "
+    "(sitename, sitetype, postdate, postnum, title, author, link) "
+    "VALUES (?, ?, ?, ?, ?, ?, ?)"
+)
