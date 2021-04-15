@@ -59,18 +59,59 @@ def insert():
             
             elif "delete" in request.form:
 
-                keys = list(request.form.keys())
-                flash(keys)
+                keys = tuple(request.form.keys())
 
-                sitenames = cur.execute("SELECT sitename FROM sitedata WHERE sitename = ?", ['khu_general']).fetchall()
+                sitenames_list = cur.execute("SELECT sitename FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(keys)), keys).fetchall()
+
+                for i in range(len(sitenames_list)):
+                    sitenames_list[i] = sitenames_list[i][0]
                 
-                for sitename in sitenames:
-                    if sitename[0] not in keys:
-                        flash(sitename[0])
-                    else:
-                        flash("123")
-                
+                if sitenames_list != []:
+                    #cur.execute("DELETE FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(sitenames_list)), sitenames_list)
+                    
+                    con.commit()
+                    flash(len(sitenames_list))
+                    flash("sites has been deleted.")
+                else:
+                    flash("Select sites to delete.")
+
                 return redirect(url_for("insert.insert")) 
+            
+            elif "alter" in request.form:
+
+                for form in form_tuple:
+                    if form == "":
+                        flash("Plesae fill out every data.")
+                        return redirect(url_for("insert.insert"))
+ 
+                keys = list(request.form.keys())
+                values = [1]
+
+                sitenames_list = cur.execute("SELECT sitename FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(keys)), keys).fetchall()
+
+                for i in range(len(sitenames_list)):
+                    if sitenames_list[i][0] in keys:
+                        sitenames_list[i] = sitenames_list[i][0]
+                    else:
+                        sitenames_list.remove(sitenames_list[i])
+
+                if len(sitenames_list) == 1:
+                    
+                    cur.execute("SELECT * FROM sitename WHERE ")
+
+                    values.append(sitenames_list[0])
+
+                    cur.execute("UPDATE sitedata set sitename = ?, main_address = ?, scrape_address = ?, sitetype = ?, list_query = ?, link_query = ?, postnum_query = ?, title_query = ?, = author_query ?, js_included = ? WHERE sitename = ?", values)
+
+                    con.commit()
+                    flash(sitenames_list[0])
+                    flash("has been modified.")
+                elif len(sitenames_list) > 1:
+                    flash("select only one site to modify.")
+                else:
+                    flash("Select a site to modify.")
+
+                return redirect(url_for("insert.insert"))
 
             elif "reset" in request.form:
                 cur.execute("DROP TABLE sitedata")
