@@ -114,7 +114,6 @@ def update_feed():
         
             insert_feed_query = (
                 "INSERT INTO sitefeed "
-                "(sitename, sitetype, postdate, postnum, title, author, link) "
                 "VALUES (?, ?, ?, ?, ?, ?, ?)"
             )
 

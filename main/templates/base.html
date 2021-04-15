@@ -19,12 +19,12 @@
                 {% for i in sitefeed %}
                 <tr>
                     <td><input type="checkbox" name = "feedcheck"></td>
+                    <td>{{ i[0] }}</td>
                     <td>{{ i[1] }}</td>
                     <td>{{ i[2] }}</td>
-                    <td>{{ i[3] }}</td>
+                    <td>{{ i[4] }}</td>
                     <td>{{ i[5] }}</td>
-                    <td>{{ i[6] }}</td>
-                    <td><a href = {{ i[7] }}>Link</a></td>
+                    <td><a href = {{ i[6] }}>Link</a></td>
                 </tr>
                 {% endfor %}
         </tbody>
