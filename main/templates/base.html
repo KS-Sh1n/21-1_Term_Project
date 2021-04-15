@@ -1,40 +1,15 @@
 <!DOCTYPE html>
 <head></head>
 <body>
-    <h3>Current List of Scraped Sites</h3>
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Main Address</th>
-                <th>Address for Scraping</th>
-                <th>Type</th>
-                <th>Query for List</th>
-                <th>Query for Link</th>
-                <th>Query for Post No.</th>
-                <th>Query for Title</th>
-                <th>Query for Author</th>
-                <th>Javascript</th>
-            </tr>
-        </thead>
-        <tbody>
-                {% for r in sitedata %}
-                <tr>
-                    {% for s in r %}
-                        <td>{{ s }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-        </tbody>
-    </table>
-
+    
     <h3>Scraped Feeds</h3>
     <table style="width:100%">
         <thead>
             <tr>
+                <th>Check</th>
                 <th>Site</th>
                 <th>Type</th>
-                <th>Scraped Date</th>
+                <th>Scraped At</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Link</th>
@@ -43,24 +18,17 @@
         <tbody>
                 {% for i in sitefeed %}
                 <tr>
-                    {% for j in i %}
-                        <td>{{ j }}</td>
-                    {% endfor %}
+                    <td><input type="checkbox" name = "feedcheck"></td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td>{{ i[3] }}</td>
+                    <td>{{ i[5] }}</td>
+                    <td>{{ i[6] }}</td>
+                    <td><a href = {{ i[7] }}>Link</a></td>
                 </tr>
                 {% endfor %}
         </tbody>
     </table>
-
-    {% for s in sitefeed %}
-        <li>sitename: {{ s[1] }}</li>
-        <li>type: {{ s[2] }}</li>
-        <li>postdate: {{ s[3] }}</li>
-        <li>postnum: {{ s[4] }}</li>
-        <li>title: {{ s[5] }}</li>
-        <li>author: {{ s[6] }}</li>
-        <li>link: {{ s[7] }}</li>
-    {% endfor %}
-    <br><br>
 
     Error : {{msg}}
     <br>
