@@ -1,10 +1,10 @@
-import mysql.connector
 import os
-import re
 import requests
 import sqlite3
 import telegram
 from bs4 import BeautifulSoup
+from datetime import datetime
+from re import compile
 from requests_html import HTMLSession
 from . import Instance_Path
 
@@ -12,10 +12,8 @@ from . import Instance_Path
 bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
 chat_id = 1327186896
 
-# Connect to sqlite3 DB
-con = sqlite3.connect(os.path.join(Instance_Path, 'data.db'))
-cur = con.cursor()
-
+def tuple_to_sitedata_dict(**kwargs):
+    return kwargs
 def extract_post_number(href, query):
 
     href_postnum_list = []
@@ -38,38 +36,47 @@ def extract_post_number(href, query):
 def update_feed():
 
     # Connect to sqlite3 DB
-    con = sqlite3.connect(os.path.join(Instance_Path, 'data.db'), detect_types= )
+    con = sqlite3.connect(os.path.join(Instance_Path, 'data.db'))
     cur = con.cursor()
-    URLs_list = cur.execute("SELECT * FROM sitedata").fetchall()
-    for element in URLs_list:
-        
+    URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
 
     # To check hoy many new posts has been retrieved
     new_post_index = 0
 
-    for url in URLs:
+    for url_tuple in URLs:
+        url = tuple_to_sitedata_dict(
+            sitename = url_tuple[0],
+            main_address = url_tuple[1],
+            scrape_address = url_tuple[2],
+            sitetype = url_tuple[3],
+            list_query = url_tuple[4],
+            link_query = url_tuple[5],
+            postnum_query = url_tuple[6],
+            title_query = url_tuple[7],
+            author_query = url_tuple[8],
+            js_included = url_tuple[9])
 
         # Latest post number from DB for comparison
-        cur.execute("SELECT postnum FROM sitefeed WHERE sitename = ? ORDER BY postnum DESC LIMIT 1", (url[0],))
-        current_latest_postnum = cur.fetchone()
+        current_latest_postnum = cur.execute(
+            "SELECT postnum FROM sitefeed WHERE sitename = ? ORDER BY postnum DESC LIMIT 1", (url["sitename"],)).fetchone()
 
         # Send HTTP request to the given URL
         # Retrieves the HTML data that server sends
-        page = requests.get(url.site_scrape_address)
+        page = requests.get(url["scrape_address"])
 
         # Construct BeautifulSoup
         bs = BeautifulSoup(page.content, 'html.parser')
 
         #To identify feed link
-        bs_results = bs.find_all(url.site_list_query, class_ = url.site_link_query)
+        bs_results = bs.find_all(url["list_query"], class_ = url["link_query"])
 
         # Extract information from feed
         for page in bs_results:
             
-            temp_link = page.find('a', href = re.compile(url.site_postnum_query))
-            page_link = url.site_main_address + temp_link['href']
+            temp_link = page.find('a', href = compile(url["postnum_query"]))
+            page_link = url["main_address"] + temp_link['href']
 
-            if(url.js_inlcuded): # If a site uses Javascript
+            if(url["js_included"]): # If a site uses Javascript
                 # Create an HTML Session object
                 session = HTMLSession()
 
@@ -90,11 +97,13 @@ def update_feed():
                 bs2 = BeautifulSoup(link_resp.content, 'html.parser')
 
             # Find title, author in the link
-            page_postnum = extract_post_number(page_link, url.site_postnum_query)
-            page_title = bs2.find(class_ = url.site_title_query).text.strip()
-            page_author = bs2.find(class_ = url.site_author_query).text.strip()
+            page_postnum = extract_post_number(page_link, url["postnum_query"])
+            page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
+            page_title = bs2.find(class_ = url["title_query"]).text.strip()
+            page_author = bs2.find(class_ = url["author_query"]).text.strip()
 
             print(page_postnum)
+            print(page_postdate)
             print(page_title)
             print(page_author)
             print(page_link)
@@ -102,47 +111,38 @@ def update_feed():
             if None in (page_title, temp_link):
                 print('None detected among title, and link')
                 continue
-            
-            # initial Data
-            if (current_latest_postnum is None):
-                # Add new feed to the Table
-                feed_to_table_query = url.add_feed_to_table(page_postnum, page_title, page_author, page_link)
+        
+            insert_feed_query = (
+                "INSERT INTO sitefeed "
+                "(sitename, sitetype, postdate, postnum, title, author, link) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)"
+            )
 
-                cur.execute(feed_to_table_query)
+            insert_tuple = (
+            url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link
+            )
+
+            bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(url["sitename"].upper(), page_author, page_title, page_link)
+
+            # New feed discovered
+            if (current_latest_postnum is None or page_postnum > current_latest_postnum[0]): 
+                # Add new feed to the Table
+                cur.execute(insert_feed_query, insert_tuple)
                 # Apply changes to DB
                 con.commit()
 
                 # Send real-time notification
-                bot_text = '<b> {0}</b>\n {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(url.site_name.upper(), page_author, page_title, page_link)
 
                 bot.send_message(
                     chat_id = chat_id, 
                     text= bot_text,
                     parse_mode = 'HTML')
+
                 new_post_index += 1
                 break
-            # New feed discovered
-            elif (page_postnum > current_latest_postnum[0]): 
-                # Add new feed to the Table
-                feed_to_table_query = url.add_feed_to_table(page_postnum, page_title, page_author, page_link)
-
-                cur.execute(feed_to_table_query)
-
-                # Apply changes to DB
-                con.commit()
-
-                # Send real-time notification
-                bot_text = '  <b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(url.site_name.upper(), page_author, page_title, page_link)
-
-                bot.send_message(
-                    chat_id = chat_id, 
-                    text= bot_text,
-                    parse_mode = 'HTML')
-
-                new_post_index += 1
             # No new feeds
             else:
-                print('No more new feeds for {0}\n'.format(url.site_name))
+                print('No more new feeds for {0}\n'.format(url["sitename"]))
                 break
 
     # Close the session
@@ -156,6 +156,3 @@ def update_feed():
         print(new_post_index, "new feeds discovered in this iteration\n")
     else:
         print("no new feed discovered in this iteration\n")
-
-# Scrape URL list
-update_feed()

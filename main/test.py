@@ -1,11 +1,6 @@
-import sqlite3
+def didi(dicts):
+    print(**dicts)
 
-sitename = "khu_general"
-sitetype = "University"
-con = sqlite3.connect('data.db')
-cur = con.cursor()
-
-cur.execute("SELECT * FROM sitedata")
-print(cur.fetchall())
-
-con.commit()
+#print(didi(first = 1, second = 2))
+a = {"first" : 1, "second" : 2}
+print(a["second"])

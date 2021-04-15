@@ -1,5 +1,6 @@
 from flask import (Blueprint, flash, g, render_template, request, session, redirect, url_for)
-from main.db import get_db, insert_feed_query, site_data_query, site_feed_query
+from main.db import get_db, site_data_query, site_feed_query
+from main.scraper import update_feed
 
 bp = Blueprint('insert', __name__, url_prefix='/insert')
 
@@ -7,6 +8,7 @@ bp = Blueprint('insert', __name__, url_prefix='/insert')
 def insert():
     con = get_db()
     cur = con.cursor()    
+    sitedata_result= []
     msg = "No Error"
 
     if request.method == 'POST':
@@ -20,7 +22,7 @@ def insert():
             postnum_query = request.form['postnum_query']
             title_query = request.form['title_query']
             author_query = request.form['author_query']
-            if request.form.get('js_included'):
+            if "js_included" in request.form:
                 js_included = True
             else:
                 js_included = False
@@ -48,21 +50,26 @@ def insert():
                 else:
                     flash("Sitedata already exists.")
                     return redirect(url_for("insert.insert"))
-
+                
                 con.commit()
-                results = cur.execute("SELECT * FROM sitedata WHERE sitename = ?", (sitename,)).fetchall()
 
                 # redirect to "end" the form (fresh state)
                 flash("Success.")
-                for result in results:
-                    flash(result)
                 return redirect(url_for("insert.insert")) 
             
             elif "delete" in request.form:
-                cur.execute("DELETE FROM sitedata")
-                cur.execute("DELETE FROM sitefeed")
-                con.commit()
-                flash("Successfully delete data from tables.")
+
+                keys = list(request.form.keys())
+                flash(keys)
+
+                sitenames = cur.execute("SELECT sitename FROM sitedata WHERE sitename = ?", ['khu_general']).fetchall()
+                
+                for sitename in sitenames:
+                    if sitename[0] not in keys:
+                        flash(sitename[0])
+                    else:
+                        flash("123")
+                
                 return redirect(url_for("insert.insert")) 
 
             elif "reset" in request.form:
@@ -75,10 +82,14 @@ def insert():
         except Exception as e:
             msg = str(e)
 
+    if (cur.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' and name = 'sitedata'")).fetchone() is not None:
+        sitedata_result= cur.execute("SELECT * FROM sitedata ORDER BY sitename").fetchall()
+
     con.commit()
     cur.close()
     con.close()
-    return render_template('insert.html',msg= msg)
+    return render_template('insert.html', sitedata = sitedata_result, msg= msg)
 
 @bp.route('/feed', methods=['GET', 'POST'])
 def insert_feed():
@@ -88,24 +99,16 @@ def insert_feed():
 
     if request.method == "POST":
         try:
-            sitename = request.form['sitename']
-            sitetype = request.form['sitetype']
-            postdate = request.form['postdate']
-            postnum = request.form['postnum']
-            title = request.form['title']
-            author = request.form['author']
-            link = request.form['link']
-            
-            insert_tuple = (
-                sitename, sitetype, postdate, postnum, title, author, link)
 
-            if "add" in request.form:
-                cur.execute(insert_feed_query, insert_tuple)
-                return redirect(url_for("insert.insert/feed"))
+            if "scrape" in request.form:
+                update_feed()
+                con.commit()
+                return redirect(url_for("insert.insert_feed"))
 
             elif "delete" in request.form:
                 cur.execute("DELETE FROM sitefeed WHERE id >= 1")
-                return redirect(url_for("insert.insert/feed"))
+                con.commit()
+                return redirect(url_for("insert.insert_feed"))
 
         except Exception as e:
             msg = str(e)

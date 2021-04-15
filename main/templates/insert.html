@@ -48,5 +48,42 @@
         {% endwith %}
         <br>
         <button><a href={{ url_for("index") }}>mainpage</a></button><br>
+
+        <h3>Current List of Scraped Sites</h3>
+        <table style="width:100%">
+            <thead>
+                <tr>
+                    <th>Check</th>
+                    <th>Name</th>
+                    <th>Main Address</th>
+                    <th>Address for Scraping</th>
+                    <th>Type</th>
+                    <th>Query for List</th>
+                    <th>Query for Link</th>
+                    <th>Query for Post No.</th>
+                    <th>Query for Title</th>
+                    <th>Query for Author</th>
+                    <th>Javascript</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for i in sitedata %}
+                    <tr>
+                        <label for="=datacheck"></label>
+                        <td><input type="checkbox" name = {{ i[0] }}></td>
+                        <td>{{ i[0] }}</td>
+                        <td>{{ i[1] }}</td>
+                        <td><a href = {{ i[2] }}>Link</a></td>
+                        <td>{{ i[3] }}</td>
+                        <td>{{ i[4] }}</td>
+                        <td>{{ i[5] }}</td>
+                        <td>{{ i[6] }}</td>
+                        <td>{{ i[7] }}</td>
+                        <td>{{ i[8] }}</td>
+                        <td>{{ i[9] }}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
     </form>
 </body>

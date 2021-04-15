@@ -33,7 +33,6 @@ def init_app():
     def index():
         con = db.get_db()
         cur = con.cursor()
-        sitedata_result= []
         sitefeed_result= []
         msg = ""
 
@@ -42,9 +41,7 @@ def init_app():
                 return redirect(url_for("insert.insert"))
 
         try:
-            sitedata_result= cur.execute("SELECT * FROM sitedata ORDER BY sitename").fetchall()
-
-            sitefeed_result= cur.execute("SELECT * FROM sitefeed").fetchall()
+            sitefeed_result= cur.execute("SELECT * FROM sitefeed ORDER BY postdate DESC").fetchall()
 
             con.commit()
             msg = "No Error."
@@ -55,5 +52,5 @@ def init_app():
         con.commit()
         cur.close()
         con.close()
-        return render_template('base.html', sitedata = sitedata_result, sitefeed= sitefeed_result, msg = msg)
+        return render_template('base.html', sitefeed= sitefeed_result, msg = msg)
     return app

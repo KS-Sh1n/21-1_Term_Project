@@ -27,7 +27,7 @@ def close_connection(e=None):
 
 site_data_query = (
     "CREATE TABLE IF NOT EXISTS sitedata "
-    "(sitename TEXT NOT NULL," 
+    "(sitename TEXT NOT NULL PRIMARY KEY," 
     "main_address TEXT NOT NULL,"
     "scrape_address TEXT NOT NULL,"
     "sitetype TEXT NOT NULL,"
@@ -40,17 +40,11 @@ site_data_query = (
 
 site_feed_query = (
     "CREATE TABLE IF NOT EXISTS sitefeed "
-    "(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-    "sitename TEXT NOT NULL," 
+    "(sitename TEXT NOT NULL," 
     "sitetype TEXT NOT NULL,"
     "postdate TEXT NOT NULL,"
     "postnum INTEGER NOT NULL,"
     "title TEXT NOT NULL,"
     "author TEXT NOT NULL,"
-    "link TEXT NOT NULL)")
-
-insert_feed_query = (
-    "INSERT INTO sitefeed "
-    "(sitename, sitetype, postdate, postnum, title, author, link) "
-    "VALUES (?, ?, ?, ?, ?, ?, ?)"
-)
+    "link TEXT NOT NULL,"
+    "FOREIGN KEY(sitename) REFERENCES sitedata(sitename))")
