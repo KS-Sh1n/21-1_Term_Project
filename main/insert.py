@@ -1,8 +1,26 @@
-from flask import (Blueprint, flash, g, render_template, request, session, redirect, url_for)
+from flask import Blueprint, flash, render_template, request, redirect, url_for
 from main.db import get_db, site_data_query, site_feed_query
 from main.scraper import update_feed
 
 bp = Blueprint('insert', __name__, url_prefix='/insert')
+
+def get_checked_site(form_):
+    for key_value in form_.items():
+        try:
+            if key_value[1] == "on" and key_value[0] != "js_included":
+                yield (key_value[0], )
+            else:
+                continue
+        except:
+            return
+def insert_value(form_):
+    for value in form_.values():
+        if value not in ("add", "on"):
+            yield value
+        elif value == "on":
+            yield 1
+        else:
+            yield 0
 
 @bp.route('/', methods=['GET', 'POST'])
 def insert():
@@ -12,112 +30,36 @@ def insert():
     msg = "No Error"
 
     if request.method == 'POST':
-        try:                
-            sitename = request.form['sitename']
-            main_address = request.form['main_address']
-            scrape_address = request.form['scrape_address']
-            sitetype = request.form['sitetype']
-            list_query = request.form['list_query']
-            link_query = request.form['link_query']
-            postnum_query = request.form['postnum_query']
-            title_query = request.form['title_query']
-            author_query = request.form['author_query']
-            if "js_included" in request.form:
-                js_included = True
-            else:
-                js_included = False
-            
-            form_tuple = (
-                    sitename, main_address, scrape_address, sitetype, list_query, link_query, postnum_query, title_query, author_query, js_included)
-
+        try:
+            # Add sitedata table elements
             if "add" in request.form:
-                
-                for form in form_tuple:
-                    if form == "":
-                        flash("Plesae fill out every data.")
-                        return redirect(url_for("insert.insert"))
-
-                # Create sitedata table and sitefeed table
-                cur.execute(site_data_query)
-                cur.execute(site_feed_query)
-
-                # To check if sitename is stored in sitedata
-                if cur.execute(
-                "SELECT sitename FROM sitedata WHERE sitename = ?", (sitename,)
-                ).fetchone() is None:
-                    cur.execute("INSERT INTO sitedata VALUES "
-                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", form_tuple)
-                else:
-                    flash("Sitedata already exists.")
-                    return redirect(url_for("insert.insert"))
-                
+                cur.executemany("INSERT INTO sitedata VALUES "
+                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form))])
                 con.commit()
 
+                flash("success")
                 # redirect to "end" the form (fresh state)
-                flash("Success.")
                 return redirect(url_for("insert.insert")) 
             
+            # Delete sitedata table elements
             elif "delete" in request.form:
-
-                keys = tuple(request.form.keys())
-
-                sitenames_list = cur.execute("SELECT sitename FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(keys)), keys).fetchall()
-
-                for i in range(len(sitenames_list)):
-                    sitenames_list[i] = sitenames_list[i][0]
-                
-                if sitenames_list != []:
-                    #cur.execute("DELETE FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(sitenames_list)), sitenames_list)
-                    
-                    con.commit()
-                    flash(len(sitenames_list))
-                    flash("sites has been deleted.")
-                else:
-                    flash("Select sites to delete.")
-
-                return redirect(url_for("insert.insert")) 
+                # want not to execute when no site has been selected.
+                cur.executemany("DELETE FROM sitedata WHERE sitename in (?)", get_checked_site(request.form))
+                con.commit()
+                flash("sites has been deleted.")
+                return redirect(url_for("insert.insert"))
             
+            # Modify table elements
             elif "alter" in request.form:
-
-                for form in form_tuple:
-                    if form == "":
-                        flash("Plesae fill out every data.")
-                        return redirect(url_for("insert.insert"))
- 
-                keys = list(request.form.keys())
-                values = [1]
-
-                sitenames_list = cur.execute("SELECT sitename FROM sitedata WHERE sitename in (%s)" % ",".join("?" * len(keys)), keys).fetchall()
-
-                for i in range(len(sitenames_list)):
-                    if sitenames_list[i][0] in keys:
-                        sitenames_list[i] = sitenames_list[i][0]
-                    else:
-                        sitenames_list.remove(sitenames_list[i])
-
-                if len(sitenames_list) == 1:
-                    
-                    cur.execute("SELECT * FROM sitename WHERE ")
-
-                    values.append(sitenames_list[0])
-
-                    cur.execute("UPDATE sitedata set sitename = ?, main_address = ?, scrape_address = ?, sitetype = ?, list_query = ?, link_query = ?, postnum_query = ?, title_query = ?, = author_query ?, js_included = ? WHERE sitename = ?", values)
-
-                    con.commit()
-                    flash(sitenames_list[0])
-                    flash("has been modified.")
-                elif len(sitenames_list) > 1:
-                    flash("select only one site to modify.")
-                else:
-                    flash("Select a site to modify.")
-
+                print("wip")
                 return redirect(url_for("insert.insert"))
 
+            # Delete every table
             elif "reset" in request.form:
                 cur.execute("DROP TABLE sitedata")
                 cur.execute("DROP TABLE sitefeed")
                 con.commit()
-                flash("Successfully delete every table.")
+                flash("Successfully deleted every table.")
                 return redirect(url_for("insert.insert"))
 
         except Exception as e:
@@ -140,14 +82,15 @@ def insert_feed():
 
     if request.method == "POST":
         try:
-
+            # Scrape feeds
             if "scrape" in request.form:
                 update_feed()
                 con.commit()
                 return redirect(url_for("insert.insert_feed"))
 
+            # Clear every feed
             elif "delete" in request.form:
-                cur.execute("DELETE FROM sitefeed WHERE id >= 1")
+                cur.execute("DELETE FROM sitefeed")
                 con.commit()
                 return redirect(url_for("insert.insert_feed"))
 

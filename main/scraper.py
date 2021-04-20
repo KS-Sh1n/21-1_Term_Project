@@ -144,7 +144,7 @@ def update_feed():
                 print('No more new feeds for {0}\n'.format(url["sitename"]))
                 break
 
-    # Close the session
+    # Close session
     cur.close()
     con.close()
 

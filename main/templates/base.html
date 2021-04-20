@@ -12,7 +12,6 @@
                 <th>Scraped At</th>
                 <th>Title</th>
                 <th>Author</th>
-                <th>Link</th>
             </tr>
         </thead>
         <tbody>
@@ -22,9 +21,8 @@
                     <td>{{ i[0] }}</td>
                     <td>{{ i[1] }}</td>
                     <td>{{ i[2] }}</td>
-                    <td>{{ i[4] }}</td>
+                    <td><a href = {{ i[6] }}>{{ i[4] }}</a></td>
                     <td>{{ i[5] }}</td>
-                    <td><a href = {{ i[6] }}>Link</a></td>
                 </tr>
                 {% endfor %}
         </tbody>

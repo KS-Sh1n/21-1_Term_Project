@@ -14,7 +14,7 @@ def init_app():
         DEBUG= True,
         DATABASE = os.path.join(app.instance_path, 'data.db')
     )
-    app.secret_key = 'asdf34reoijfdio'
+    app.secret_key = 'dev'
 
     # Ensure the instance folder exists
     try:
@@ -23,9 +23,8 @@ def init_app():
         pass
     
     # Initialize Database & blueprint
-    from . import db, result, insert
+    from . import db, insert
     db.init_app(app)
-    app.register_blueprint(result.bp)
     app.register_blueprint(insert.bp)
     
     # A test page for hello world
@@ -36,16 +35,10 @@ def init_app():
         sitefeed_result= []
         msg = ""
 
-        if request.method == "POST":
-            if "addsite" in request.form:
-                return redirect(url_for("insert.insert"))
-
         try:
             sitefeed_result= cur.execute("SELECT * FROM sitefeed ORDER BY postdate DESC").fetchall()
-
             con.commit()
             msg = "No Error."
-
         except Exception as e:
             msg = (str(e))
 
