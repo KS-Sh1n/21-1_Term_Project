@@ -35,8 +35,12 @@ def insert():
         try:
             # Add sitedata table elements
             if "add" in request.form:
+                # Create table if not exists
+                cur.execute(site_data_query)
+                cur.execute(site_feed_query)
+
                 cur.executemany("INSERT INTO sitedata VALUES "
-                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
+                    "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
                 con.commit()
 
                 flash("success")
@@ -68,10 +72,10 @@ def insert():
                             form_values[i] = site_backup[0][i]
 
                     # Delete table, and
+                    # Reaplce it with a table with modified values
                     cur.execute("DELETE FROM sitedata WHERE sitename = ?", checked_site[0])
-                    # Reaplce it with a table with modified value
                     cur.executemany("INSERT INTO sitedata VALUES "
-                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(form_values))])
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(form_values))])
                     con.commit()
                     flash("successfully modified a table.")
 

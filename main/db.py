@@ -31,7 +31,6 @@ site_data_query = (
     "main_address TEXT NOT NULL,"
     "scrape_address TEXT NOT NULL,"
     "sitetype TEXT NOT NULL,"
-    "list_query TEXT NOT NULL,"
     "link_query TEXT NOT NULL,"
     "postnum_query INTEGER NOT NULL,"
     "title_query TEXT NOT NULL,"
