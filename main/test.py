@@ -1,16 +1,8 @@
-a = dict(first = "on", second = "on", third = "on")
+def tuple_to_sitedata_dict(**kwargs):
+    for key, value in kwargs.items():
+        if type(value) is str and "," in value:
+            kwargs[key] = value.split(sep = ",")
+    return kwargs
 
-def get_checked_site(form_):
-    for value_tuple in form_.items():
-        try:
-            if value_tuple[1] == "on" and value_tuple[0] != "js_included":
-                yield (value_tuple[0], )
-            else:
-                continue
-        except:
-            return
-
-#result should be[(first,), (second,)]
-b = get_checked_site(a)
-print(len(list(b)))
-print(len(list(b)))
+dict = tuple_to_sitedata_dict(a = "1, 2", b = "2, 3", c = "3, 4", d= 4)
+print(dict)

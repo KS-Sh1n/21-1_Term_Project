@@ -13,6 +13,9 @@ bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
 chat_id = 1327186896
 
 def tuple_to_sitedata_dict(**kwargs):
+    for key, value in kwargs.items():
+        if type(value) is str and "," in value:
+            kwargs[key] = value.split(sep = ",")
     return kwargs
 def extract_post_number(href, query):
 
@@ -49,12 +52,11 @@ def update_feed():
             main_address = url_tuple[1],
             scrape_address = url_tuple[2],
             sitetype = url_tuple[3],
-            list_query = url_tuple[4],
-            link_query = url_tuple[5],
-            postnum_query = url_tuple[6],
-            title_query = url_tuple[7],
-            author_query = url_tuple[8],
-            js_included = url_tuple[9])
+            link_query = url_tuple[4],
+            postnum_query = url_tuple[5],
+            title_query = url_tuple[6],
+            author_query = url_tuple[7],
+            js_included = url_tuple[8])
 
         # Latest post number from DB for comparison
         current_latest_postnum = cur.execute(
@@ -68,26 +70,43 @@ def update_feed():
         bs = BeautifulSoup(page.content, 'html.parser')
 
         #To identify feed link
-        bs_results = bs.find_all(url["list_query"], class_ = url["link_query"])
+        bs_results = bs.find_all(class_ = url["link_query"])
 
-        # Extract information from feed
+        # Dive into each page element
         for page in bs_results:
             
             temp_link = page.find('a', href = compile(url["postnum_query"]))
+
+            # Filter out garbage value
+            if temp_link is None:
+                continue
+
             page_link = url["main_address"] + temp_link['href']
+
+            page_postnum = extract_post_number(page_link, url["postnum_query"])
+
+            # Control flow before going deep into the link to save time
+            if (current_latest_postnum is not None and page_postnum <= current_latest_postnum[0]):
+                print('No more new feeds for {0}\n'.format(url["sitename"]))
+                break
 
             if(url["js_included"]): # If a site uses Javascript
                 # Create an HTML Session object
                 session = HTMLSession()
+                print("KSKSKSKSKSKSKS")
 
                 # Use the object above to connect to needed webpage
                 js_resp = session.get(page_link)
+                print("KSKSKSKSKSKSKS")
 
                 # Run JavaScript code on webpage
                 js_resp.html.render()
+                print("KSKSKSKSKSKSKS")
 
                 # Construct BeautifulSoup
                 bs2 = BeautifulSoup(js_resp.html.html, 'html.parser')
+                print("KSKSKSKSKSKSKS")
+
             else: # No Javascript
                 # Send HTTP request to the given URL
                 # Retrieves the HTML data that server sends
@@ -97,7 +116,6 @@ def update_feed():
                 bs2 = BeautifulSoup(link_resp.content, 'html.parser')
 
             # Find title, author in the link
-            page_postnum = extract_post_number(page_link, url["postnum_query"])
             page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
             page_title = bs2.find(class_ = url["title_query"]).text.strip()
             page_author = bs2.find(class_ = url["author_query"]).text.strip()
@@ -111,7 +129,7 @@ def update_feed():
             if None in (page_title, temp_link):
                 print('None detected among title, and link')
                 continue
-        
+                    
             insert_feed_query = (
                 "INSERT INTO sitefeed "
                 "VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -123,27 +141,20 @@ def update_feed():
 
             bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(url["sitename"].upper(), page_author, page_title, page_link)
 
-            # New feed discovered
-            if (current_latest_postnum is None or page_postnum > current_latest_postnum[0]): 
-                # Add new feed to the Table
-                cur.execute(insert_feed_query, insert_tuple)
-                # Apply changes to DB
-                con.commit()
+            # Add new feed to the Table
+            cur.execute(insert_feed_query, insert_tuple)
+            # Apply changes to DB
+            con.commit()
 
-                # Send real-time notification
+            # Send real-time notification
+            bot.send_message(
+                chat_id = chat_id, 
+                text= bot_text,
+                parse_mode = 'HTML')
 
-                bot.send_message(
-                    chat_id = chat_id, 
-                    text= bot_text,
-                    parse_mode = 'HTML')
-
-                new_post_index += 1
-                break
-            # No new feeds
-            else:
-                print('No more new feeds for {0}\n'.format(url["sitename"]))
-                break
-
+            new_post_index += 1
+            break
+            
     # Close session
     cur.close()
     con.close()
