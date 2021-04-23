@@ -5,7 +5,7 @@ import telegram
 from bs4 import BeautifulSoup
 from datetime import datetime
 from re import compile
-from requests_html import HTMLSession
+from selenium import webdriver
 from . import Instance_Path
 
 # Telegram Bot Configuration
@@ -91,21 +91,15 @@ def update_feed():
                 break
 
             if(url["js_included"]): # If a site uses Javascript
-                # Create an HTML Session object
-                session = HTMLSession()
-                print("KSKSKSKSKSKSKS")
+                # Using selenium
+                browser = webdriver.Edge()
 
-                # Use the object above to connect to needed webpage
-                js_resp = session.get(page_link)
-                print("KSKSKSKSKSKSKS")
+                # Open browser
+                browser.get(page_link)
+                bs2 = BeautifulSoup(browser.page_source, 'html.parser')
 
-                # Run JavaScript code on webpage
-                js_resp.html.render()
-                print("KSKSKSKSKSKSKS")
-
-                # Construct BeautifulSoup
-                bs2 = BeautifulSoup(js_resp.html.html, 'html.parser')
-                print("KSKSKSKSKSKSKS")
+                # After getting page source, close browser
+                browser.close()
 
             else: # No Javascript
                 # Send HTTP request to the given URL

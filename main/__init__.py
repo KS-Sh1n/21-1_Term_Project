@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import current_app, Flask, render_template, request, redirect, url_for
 
 # To import from scraper application
@@ -34,6 +35,7 @@ def init_app():
         cur = con.cursor()
         sitefeed_result= []
         msg = ""
+        time = datetime.now().strftime("%Y/%m/%d %H:%M")
 
         try:
             sitefeed_result= cur.execute("SELECT * FROM sitefeed ORDER BY postdate DESC").fetchall()
@@ -45,5 +47,5 @@ def init_app():
         con.commit()
         cur.close()
         con.close()
-        return render_template('base.html', sitefeed= sitefeed_result, msg = msg)
+        return render_template('base.html', sitefeed= sitefeed_result, msg = msg, time = time)
     return app
