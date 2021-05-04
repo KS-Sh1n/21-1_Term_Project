@@ -3,6 +3,8 @@ import click
 from flask import current_app, g, request
 from flask.cli import with_appcontext
 
+_instance_path = 'C:/Users/yunse/Desktop/Python/21-1_Term_Project/instance'
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:

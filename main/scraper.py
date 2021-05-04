@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from re import compile
 from selenium import webdriver
-from . import Instance_Path
+from main.db import get_db, _instance_path
+from flask import session
 
 # Telegram Bot Configuration
 bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
@@ -37,9 +38,8 @@ def extract_post_number(href, query):
 
     return href_postnum
 def update_feed():
-
     # Connect to sqlite3 DB
-    con = sqlite3.connect(os.path.join(Instance_Path, 'data.db'))
+    con = sqlite3.connect(os.path.join(_instance_path, 'data.db'))
     cur = con.cursor()
     URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
 
@@ -147,7 +147,6 @@ def update_feed():
                 parse_mode = 'HTML')
 
             new_post_index += 1
-            break
             
     # Close session
     cur.close()
