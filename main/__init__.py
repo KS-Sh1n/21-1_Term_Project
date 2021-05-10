@@ -23,6 +23,7 @@ def init_app():
     # Initialize Core Application
     app = Flask('__name__',
         instance_path= _instance_path,
+        static_folder= "main\static",
         template_folder='main/templates')
     app.config.from_mapping(
         ENV = 'development', 

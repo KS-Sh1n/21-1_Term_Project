@@ -9,10 +9,6 @@ from selenium import webdriver
 from main.db import get_db, _instance_path
 from flask import session
 
-# Telegram Bot Configuration
-bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
-chat_id = 1327186896
-
 def tuple_to_sitedata_dict(**kwargs):
     for key, value in kwargs.items():
         if type(value) is str and "," in value:
@@ -38,14 +34,23 @@ def extract_post_number(href, query):
 
     return href_postnum
 def update_feed():
+
+    # Telegram Bot Configuration
+    bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
+    chat_id = 1327186896
+
     # Connect to sqlite3 DB
     con = sqlite3.connect(os.path.join(_instance_path, 'data.db'))
     cur = con.cursor()
     URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
 
+    # For debugging purpose
+    print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+
     # To check hoy many new posts has been retrieved
     new_post_index = 0
 
+    # Convert sitadata tuple to dictionary with keys
     for url_tuple in URLs:
         url = tuple_to_sitedata_dict(
             sitename = url_tuple[0],
@@ -133,7 +138,8 @@ def update_feed():
             url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link
             )
 
-            bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(url["sitename"].upper(), page_author, page_title, page_link)
+            bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(
+                url["sitename"].upper(), page_author, page_title, page_link)
 
             # Add new feed to the Table
             cur.execute(insert_feed_query, insert_tuple)

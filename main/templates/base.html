@@ -1,42 +1,57 @@
 <!DOCTYPE html>
-<head></head>
+<head>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+    <script src="{{ url_for('static', filename='template.js') }}"></script>
+
+</head>
 <body>
-    
-    <h3>Scraped Feeds</h3>
+
+    <h3 id = "title">Scraped Feeds</h3>
 
     <form method="POST">
-
-        <input type="submit" name="scrape" value="scrape">
-        <br>
-        Error : {{msg}}
-        <br>
-        <button><a href={{ url_for("insert.insert") }}>addsite</a></button>
-        <button><a href={{ url_for("insert.insert_feed") }}>addfeed</a></button>
-        <br>
+        <input type="submit" name="scrape" value="scrape" onclick="scrapeloading();">
     </form>
 
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th>Check</th>
-                <th>Site</th>
-                <th>Type</th>
-                <th>Scraped At</th>
-                <th>Title</th>
-                <th>Author</th>
-            </tr>
-        </thead>
-        <tbody>
-                {% for i in sitefeed %}
+        <div id="loading"></div>
+
+        <br>
+        <label id = "error">Error : {{msg}}</label>
+        <br>
+
+    <div id="content">
+
+        <form method="POST">
+
+            <button><a href={{ url_for("insert.insert") }}>addsite</a></button>
+            <button><a href={{ url_for("insert.insert_feed") }}>addfeed</a></button>
+            <br>
+
+        </form>
+
+        <table style="width:100%">
+            <thead>
                 <tr>
-                    <td><input type="checkbox" name = "feedcheck"></td>
-                    <td>{{ i[0] }}</td>
-                    <td>{{ i[1] }}</td>
-                    <td>{{ i[2] }}</td>
-                    <td><a href = {{ i[6] }}>{{ i[4] }}</a></td>
-                    <td>{{ i[5] }}</td>
+                    <th>Check</th>
+                    <th>Site</th>
+                    <th>Type</th>
+                    <th>Scraped At</th>
+                    <th>Title</th>
+                    <th>Author</th>
                 </tr>
-                {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                    {% for i in sitefeed %}
+                    <tr>
+                        <td><input type="checkbox" name = "feedcheck"></td>
+                        <td>{{ i[0] }}</td>
+                        <td>{{ i[1] }}</td>
+                        <td>{{ i[2] }}</td>
+                        <td><a href = {{ i[6] }}>{{ i[4] }}</a></td>
+                        <td>{{ i[5] }}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table>    
+    </div>
 </body>
