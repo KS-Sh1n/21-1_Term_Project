@@ -45,7 +45,7 @@ def update_feed():
     URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
 
     # For debugging purpose
-    print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+    print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))  
 
     # To check hoy many new posts has been retrieved
     new_post_index = 0

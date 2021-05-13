@@ -3,6 +3,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
     <script src="{{ url_for('static', filename='template.js') }}"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
 
 </head>
 <body>
@@ -29,13 +30,13 @@
 
         </form>
 
-        <table style="width:100%">
+        <table id = "sitefeed" style="width:100%">
             <thead>
                 <tr>
                     <th>Check</th>
-                    <th>Site</th>
-                    <th>Type</th>
-                    <th>Scraped At</th>
+                    <th><button>Site</button></th>
+                    <th><button>Type</button></th>
+                    <th><button>Scraped At</button></th>
                     <th>Title</th>
                     <th>Author</th>
                 </tr>

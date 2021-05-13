@@ -3,5 +3,4 @@ div#loading {
     height: 300px;
     display: none;
     background: url(Loading.gif) no-repeat;
-    cursor: wait;
     }
