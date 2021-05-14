@@ -3,7 +3,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
     <script src="{{ url_for('static', filename='template.js') }}"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
 
 </head>
 <body>
@@ -11,8 +11,9 @@
     <h3 id = "title">Scraped Feeds</h3>
 
     <form method="POST">
-        <input type="submit" name="scrape" value="scrape" onclick="scrapeloading();">
+        <input type="submit" value = "scrape" onclick="scrapeloading();">
     </form>
+        <button id = "select">select</button>
 
         <div id="loading"></div>
 
@@ -30,13 +31,13 @@
 
         </form>
 
-        <table id = "sitefeed" style="width:100%">
+        <table>
             <thead>
                 <tr>
-                    <th>Check</th>
-                    <th><button>Site</button></th>
-                    <th><button>Type</button></th>
-                    <th><button>Scraped At</button></th>
+                    <th><div id = "checkbox"><label>Check</label></div></th>
+                    <th><button onclick="sort(1)">Site</button></th>
+                    <th><button onclick="sort(2)">Type</button></th>
+                    <th><button onclick="sort(3)">Scraped At</button></th>
                     <th>Title</th>
                     <th>Author</th>
                 </tr>
@@ -44,7 +45,7 @@
             <tbody>
                     {% for i in sitefeed %}
                     <tr>
-                        <td><input type="checkbox" name = "feedcheck"></td>
+                        <td><div id = "checkbox"><input type="checkbox"></div></td>
                         <td>{{ i[0] }}</td>
                         <td>{{ i[1] }}</td>
                         <td>{{ i[2] }}</td>

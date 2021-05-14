@@ -4,3 +4,9 @@ div#loading {
     display: none;
     background: url(Loading.gif) no-repeat;
     }
+div#checkbox {
+    display: none;
+}
+table {
+    size: "100%";
+}

@@ -1,12 +1,42 @@
 <!DOCTYPE html>
-<html>
+
+<head>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
+    <script src = "..//static/test.js"></script>
+</head>
+
 <body>
 
-<h2>What Can JavaScript Do?</h2>
-
-<p id="demo">JavaScript can change HTML content.</p>
-
-<button type="button" onclick='document.getElementById("demo").innerHTML = "Hello JavaScript!"'>Click Me!</button>
-
+    <table>
+        <tr>
+        <th><button onclick="sort(0)">a</button></th>
+        <th><button onclick="sort(1)">b</button></th>
+        <th><button onclick="sort(2)">c</button></th>
+        <th><button onclick="sort(3)">d</button></th>
+        </tr>
+        <tr id = "a">
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+        </tr>
+        <tr id = "b">
+        <td>22</td>
+        <td>33</td>
+        <td>44</td>
+        <td>11</td>
+        </tr>
+        <tr id = "c">
+        <td>333</td>
+        <td>444</td>
+        <td>111</td>
+        <td>222</td>
+        </tr>
+        <tr id = "d">
+        <td>4444</td>
+        <td>1111</td>
+        <td>2222</td>
+        <td>3333</td>
+        </tr>
+    </table>
 </body>
-</html>
