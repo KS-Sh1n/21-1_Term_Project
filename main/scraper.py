@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from re import compile
 from selenium import webdriver
-from main.db import get_db, _instance_path
-from flask import session
+from .db import _instance_path
 
 def tuple_to_sitedata_dict(**kwargs):
     for key, value in kwargs.items():

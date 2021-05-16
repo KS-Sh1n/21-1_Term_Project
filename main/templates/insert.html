@@ -45,7 +45,8 @@
             {% endif %}
         {% endwith %}
         <br>
-        <button><a href={{ url_for("index") }}>mainpage</a></button><br>
+        <button><a href={{ url_for("index") }}>mainpage</a></button>
+        <br>
 
         <h3>Current List of Scraped Sites</h3>
         <table style="width:100%">
@@ -66,7 +67,6 @@
             <tbody>
                     {% for i in sitedata %}
                     <tr>
-                        <label for="=datacheck"></label>
                         <td><input type="checkbox" name = {{ i[0] }}></td>
                         <td>{{ i[0] }}</td>
                         <td>{{ i[1] }}</td>

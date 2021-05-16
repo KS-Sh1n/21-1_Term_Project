@@ -4,7 +4,10 @@ div#loading {
     display: none;
     background: url(Loading.gif) no-repeat;
     }
-div#checkbox {
+#checkbox{
+    display: none;
+}
+[type = checkbox]{
     display: none;
 }
 table {

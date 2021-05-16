@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <head>
 
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
     <script src="{{ url_for('static', filename='template.js') }}"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
 
 </head>
 <body>
@@ -11,9 +11,11 @@
     <h3 id = "title">Scraped Feeds</h3>
 
     <form method="POST">
-        <input type="submit" value = "scrape" onclick="scrapeloading();">
-    </form>
-        <button id = "select">select</button>
+        <input type="submit" name = "scrape" value = "scrape" onclick="scrapeloading();">
+        <label id = "select" onclick = "selectbox();">select</label>
+        <br>
+        <input id = "checkbox" type="submit" name = "delete" value = "delete">
+        <label id = "checkbox" onclick = "checkall();">check all</label>
 
         <div id="loading"></div>
 
@@ -21,39 +23,36 @@
         <label id = "error">Error : {{msg}}</label>
         <br>
 
-    <div id="content">
+        <div id="content">
+            <form method="POST">
+                <button><a href={{ url_for("insert.insert") }}>addsite</a></button>
+                <br>
+            </form>
 
-        <form method="POST">
-
-            <button><a href={{ url_for("insert.insert") }}>addsite</a></button>
-            <button><a href={{ url_for("insert.insert_feed") }}>addfeed</a></button>
-            <br>
-
-        </form>
-
-        <table>
-            <thead>
-                <tr>
-                    <th><div id = "checkbox"><label>Check</label></div></th>
-                    <th><button onclick="sort(1)">Site</button></th>
-                    <th><button onclick="sort(2)">Type</button></th>
-                    <th><button onclick="sort(3)">Scraped At</button></th>
-                    <th>Title</th>
-                    <th>Author</th>
-                </tr>
-            </thead>
-            <tbody>
-                    {% for i in sitefeed %}
+            <table>
+                <thead>
                     <tr>
-                        <td><div id = "checkbox"><input type="checkbox"></div></td>
-                        <td>{{ i[0] }}</td>
-                        <td>{{ i[1] }}</td>
-                        <td>{{ i[2] }}</td>
-                        <td><a href = {{ i[6] }}>{{ i[4] }}</a></td>
-                        <td>{{ i[5] }}</td>
+                        <th></th>
+                        <th>Site</th>
+                        <th>Type</th>
+                        <th>Scraped At</th>
+                        <th>Title</th>
+                        <th>Author</th>
                     </tr>
-                    {% endfor %}
-            </tbody>
-        </table>    
-    </div>
+                </thead>
+                <tbody>
+                        {% for i in sitefeed %}
+                        <tr>
+                            <td><input type="checkbox" name = {{ i[6] }}></td>
+                            <td>{{ i[0] }}</td>
+                            <td>{{ i[1] }}</td>
+                            <td>{{ i[2] }}</td>
+                            <td><a href = {{ i[6] }}>{{ i[4] }}</a></td>
+                            <td>{{ i[5] }}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>    
+        </div>
+    </form>
 </body>

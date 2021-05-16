@@ -5,31 +5,48 @@ function scrapeloading()
     document.getElementById('title').innerHTML = "Scrping Feeds";
 }
 
-function sort(index)
+function selectbox()
 {
-    var table = $('th').parents('table').eq(0);
-    var rows = table.find('tr:gt(0)').toArray().sort(comparer(index));
-    console.log(rows);
-    console.log();
-    this.asc = !this.asc
-    if (!this.asc){rows = rows.reverse()}
-    for (var i = 0; i < rows.length; i++){table.append(rows)}
-}
-
-function comparer(index)
-{
-    return function(a, b) {
-        var valA = getCellValue(a, index), valB = getCellValue(b, index)
-        return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+    if ($('#checkbox').is(":hidden"))
+    {
+        document.getElementById('select').innerHTML="cancel";
+        document.getElementById('checkbox').style.display='block';
+        $('input:checkbox, label#checkbox').show();
+    }
+    else
+    {
+        document.getElementById('select').innerHTML="select";
+        document.getElementById('checkbox').style.display='none';
+        $('input:checkbox, label#checkbox').hide();
     }
 }
-
-function getCellValue(row, index)
+function checkall()
 {
-    return $(row).children('td').eq(index).text()
+    var boxes = $('table').find(':checkbox:checked').toArray();
+    var fulllength = $('table').find(':checkbox').toArray();
+    boxes.length != fulllength.length ? $('table :checkbox').prop('checked', true) : $('table :checkbox').prop('checked', false);
 }
 
-$('#select').click(function(){
-    console.log("1321312321");
-    document.getElementById('checkbox').style.display='block';
+$(document).ready(function(){
+    $('th').click(function(){
+        var table = $(this).parents('table:first');
+        var rows = table.find("tr:gt(0)").toArray().sort(sortfunction(a, b, column))
+    })
 })
+
+function outersort(a, b, column)
+{
+    var v = innersort(a, b, column);
+}
+
+function innersort(a, b, column)
+{
+    var row_a = zero_matrix(a, column);
+    var row_b = zero_matrix(b, column);
+    return $.isNumeric(row_a) && $.isNumeric(row_b) ? row_a - row_b : row_a.toString().localeCompare(row_b)
+}
+
+function zero_matrix(row, column)
+{
+    return $(row).children('td').eq(column).text();
+}

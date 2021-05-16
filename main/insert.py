@@ -1,10 +1,18 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
-from main.db import get_db, site_data_query, site_feed_query
-from main.scraper import update_feed
+from .db import get_db, site_data_query, site_feed_query
 
+# Declare blueprint
 bp = Blueprint('insert', __name__, url_prefix='/insert')
 
 def get_checked_site(form_):
+    """ (multidict) -> generator
+    Retrieve checked data from request.form multidict.
+
+    if value of request.form is "on", which means checkbox is checked, get a corresponding key with a form of single-length tuple. Then this generator is handed into executemany() function to perform operation with checked data.
+
+    >>> get_checked_site({"a": "on", "b": "", "c": "on"})
+    generator of ("a", ), ("c", )
+    """
     for key_value in form_.items():
         try:
             if key_value[1] == "on" and key_value[0] != "js_included":
@@ -13,8 +21,17 @@ def get_checked_site(form_):
                 continue
         except:
             return
-def insert_value(form_):
-    for value in form_:
+def insert_value(form_value):
+    """ (tuple) -> generator
+    Retireve addsite form value from request.form
+
+    This function reads data until it reaches data whose value is "add", "alter" or "on"
+    If "on" is in the request.form, it means that checkbox in the addsite form has been checked. The function yields 1(true) in this case, to indicate that checkbox has been checked and 0(false) otherwise.
+
+    >>> insert_value("a", "b", "c", "on", "add")
+    generator of ("a", "b", "c", 1)
+    """
+    for value in form_value:
         if value not in ("add", "alter", "on"):
             yield value
         elif value == "on":
@@ -55,7 +72,7 @@ def insert():
                 flash("sites has been deleted.")
                 return redirect(url_for("insert.insert"))
             
-            # Modify table elements
+            # Modify table elements (delete and recreate)
             elif "alter" in request.form:
                 checked_site = tuple(get_checked_site(request.form))
 
@@ -81,7 +98,7 @@ def insert():
 
                 return redirect(url_for("insert.insert"))
 
-            # Delete every table
+            # Delete every data
             elif "reset" in request.form:
                 cur.execute("DROP TABLE sitedata")
                 cur.execute("DROP TABLE sitefeed")
@@ -100,32 +117,3 @@ def insert():
     cur.close()
     con.close()
     return render_template('insert.html', sitedata = sitedata_result, msg= msg)
-
-@bp.route('/feed', methods=['GET', 'POST'])
-def insert_feed():
-    con = get_db()
-    cur = con.cursor()
-    msg = "No Error"
-
-    if request.method == "POST":
-        try:
-            # Scrape feeds
-            if "scrape" in request.form:
-                update_feed()
-                con.commit()
-                return redirect(url_for("insert.insert_feed"))
-
-            # Clear every feed
-            elif "delete" in request.form:
-                cur.execute("DELETE FROM sitefeed")
-                con.commit()
-                return redirect(url_for("insert.insert_feed"))
-
-        except Exception as e:
-            msg = str(e)
-    
-    con.commit()
-    cur.close()
-    con.close()
-
-    return render_template('insert_feed.html', msg = msg)

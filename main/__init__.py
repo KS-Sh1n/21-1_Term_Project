@@ -6,6 +6,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from .scraper import update_feed
 from .db import _instance_path
+from .insert import get_checked_site
 
 def init_scheduler():
     # APScheduler Configuration
@@ -18,43 +19,33 @@ def init_scheduler():
     scheduler = BackgroundScheduler(jobstores = jobstores,  executors = executors)
     scheduler.start()
     return scheduler
-
 def init_app():
-    # Initialize Core Application
+    # Core application configuration
     app = Flask('__name__',
-        instance_path= _instance_path,
         static_folder= "main/static",
         template_folder='main/templates')
     app.config.from_mapping(
         ENV = 'development', 
         DEBUG= True,
-        DATABASE = os.path.join(app.instance_path, 'data.db')
+        DATABASE = os.path.join(_instance_path, 'data.db')
         )
     app.secret_key = 'dev'
 
-    # Ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    # Initialize database & blueprint
+    # Initialize database, blueprint, and scheduler
     from . import db, insert
     db.init_app(app)
     app.register_blueprint(insert.bp)
     scheduler = init_scheduler()
 
-    # Main page with sitefeed data
+    # Main page template
     @app.route('/', methods=['GET', 'POST'])
     def index():
         con = db.get_db()
         cur = con.cursor()
         sitefeed_result= []
         msg = ""
-        time = datetime.now().strftime("%Y/%m/%d %H:%M")
 
         # Scheduler to scrape feed at every 0 / 30 minute
-        # Server automatically scrapes feed when server is loaded for the first time by a user.
         scheduler.add_job(
         func= update_feed,
         trigger= 'cron',
@@ -63,21 +54,33 @@ def init_app():
         replace_existing= True)
 
         try:
+            # Display feeds at page
             sitefeed_result= cur.execute("SELECT * FROM sitefeed ORDER BY postdate DESC").fetchall()
             con.commit()
             msg = "No Error."
 
-            # Scrape feeds
+            # Scrape button to get feeds from website
             if "scrape" in request.form:
                 update_feed()
                 con.commit()
                 return redirect(url_for("index"))
 
+            # Delete button to remove feeds from table
+            # Appears after select button is clicked
+            elif "delete" in request.form:
+                cur.executemany("DELETE FROM sitefeed WHERE link in (?)", get_checked_site(request.form))
+                con.commit()
+                return redirect(url_for("index"))
+
+        # Error message if any error occured
         except Exception as e:
             msg = (str(e))
 
+        # Apply change and close connection
         con.commit()
         cur.close()
         con.close()
-        return render_template('base.html', sitefeed= sitefeed_result, msg = msg, time = time)
+
+        # Return template page
+        return render_template('base.html', sitefeed= sitefeed_result, msg = msg)
     return app
