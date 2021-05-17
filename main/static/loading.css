@@ -4,10 +4,13 @@ div#loading {
     display: none;
     background: url(Loading.gif) no-repeat;
     }
-#checkbox{
+div#checkbox{
     display: none;
 }
-[type = checkbox]{
+div#confirmreset{
+    display: none;
+}
+[type = checkbox]:first-child{
     display: none;
 }
 table {

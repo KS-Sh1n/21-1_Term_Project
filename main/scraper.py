@@ -35,7 +35,7 @@ def extract_post_number(href, query):
 def update_feed():
 
     # Telegram Bot Configuration
-    bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
+    bot = telegram.Bot(token = '1822963809:AAFukVSeaOI30bHdZuSxkDTnY9KOxo0YSc8')
     chat_id = 1327186896
 
     # Connect to sqlite3 DB

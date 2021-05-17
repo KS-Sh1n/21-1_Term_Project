@@ -1,39 +1,59 @@
 <!DOCTYPE html>
-<head></head>
+<head>
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+    <script src="{{ url_for('static', filename='template.js') }}"></script>
+
+</head>
 <body>
-    <h3>Add site data in this page.</h3>
+    <h3 id = "title">Add site data in this page.</h3>
+    <h3><div id = "checkbox">Select an element with checkbox.</div></h3>
+
     <form method="POST">
-        <label for="=sitename">sitename</label>
-        <input type="text" id="sitename" name="sitename"><br>
+        <div id = "data_form">
+            <label for="=sitename">sitename</label>
+            <input type="text" id="sitename" name="sitename"><br>
+        
+            <label for="=main_address">main_address</label>
+            <input type="text" id="main_address" name="main_address" ><br>
+        
+            <label for="=scrape_address">scrape_address</label>
+            <input type="text" id="scrape_address" name="scrape_address"><br>
+        
+            <label for="=sitetype">sitetype</label>
+            <input type="text" id="sitetype" name="sitetype"><br>
     
-        <label for="=main_address">main_address</label>
-        <input type="text" id="main_address" name="main_address" ><br>
+            <label for="=link_query">link_query</label>
+            <input type="text" id="link_query" name="link_query"><br>
     
-        <label for="=scrape_address">scrape_address</label>
-        <input type="text" id="scrape_address" name="scrape_address"><br>
+            <label for="=postnum_query">postnum_query</label>
+            <input type="text" id="postnum_query" name="postnum_query"><br>
     
-        <label for="=sitetype">sitetype</label>
-        <input type="text" id="sitetype" name="sitetype"><br>
+            <label for="=title_query">title_query</label>
+            <input type="text" id="title_query" name="title_query"><br>
+    
+            <label for="=author_query">author_query</label>
+            <input type="text" id="author_query" name="author_query"><br>
+    
+            <label for="=js_included">javascript</label>
+            <input type="checkbox" name="js_included"><br>
+        </div>
+        <div id = "checkbox">
+            <input type="submit" name="delete" value="delete">
+            <input type="submit" name="alter" value="alter">    
+        </div>
+        <div id = "form_submit">
+            <input type="submit" name="add" value="add">
+            <label onclick = "confirmreset();">reset</label>
+        </div>
 
-        <label for="=link_query">link_query</label>
-        <input type="text" id="link_query" name="link_query"><br>
+        <label id = "select" onclick = "selectbox();">select</label>
 
-        <label for="=postnum_query">postnum_query</label>
-        <input type="text" id="postnum_query" name="postnum_query"><br>
-
-        <label for="=title_query">title_query</label>
-        <input type="text" id="title_query" name="title_query"><br>
-
-        <label for="=author_query">author_query</label>
-        <input type="text" id="author_query" name="author_query"><br>
-
-        <label for="=js_included">js_included (0 or 1)</label>
-        <input type="checkbox" name="js_included"><br>
-
-        <input type="submit" name="add" value="add">
-        <input type="submit" name="delete" value="delete">
-        <input type="submit" name="alter" value="alter">
-        <input type="submit" name="reset" value="reset"><br>
+        <div id = "confirmreset">
+            <input type="submit" name="reset" value="yes">
+            <button>no</button> 
+        </div><br><br>
 
         Error : {{msg}}
         <br>
@@ -52,7 +72,7 @@
         <table style="width:100%">
             <thead>
                 <tr>
-                    <th>Check</th>
+                    <th></th>
                     <th>Name</th>
                     <th>Main Address</th>
                     <th>Address for Scraping</th>

@@ -1,9 +1,8 @@
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for
+from apscheduler.executors.pool import ThreadPoolExecutor
+from flask import Flask, render_template, request, redirect, url_for, flash
 from .scraper import update_feed
 from .db import _instance_path
 from .insert import get_checked_site
@@ -70,6 +69,7 @@ def init_app():
             elif "delete" in request.form:
                 cur.executemany("DELETE FROM sitefeed WHERE link in (?)", get_checked_site(request.form))
                 con.commit()
+                flash("feeds have been deleted.")
                 return redirect(url_for("index"))
 
         # Error message if any error occured

@@ -1,25 +1,34 @@
+function confirmreset()
+{
+    $('#confirmreset').show();
+    $('#title').text("Are you sure of clearing every data and table?");
+    $('div#data_form, div#form_submit, label#select').hide();
+}
+
 function scrapeloading()
 {
     // Show loading spinner, hide table content whild scraping.
-    document.getElementById('loading').style.display='block';    document.getElementById('content').style.display='none';
-    document.getElementById('title').innerHTML = "Scrping Feeds";
+    $('#loading').show();
+    $('#content').hide();
+    $('#title').text("Scraping feeds...");
 }
 
 function selectbox()
 {
     if ($('#checkbox').is(":hidden"))
     {
-        document.getElementById('select').innerHTML="cancel";
-        document.getElementById('checkbox').style.display='block';
-        $('input:checkbox, label#checkbox').show();
+        $('#select').text("cancel");
+        $('div#checkbox, input:checkbox:first-child').show();
+        $('#title, div#form_submit').hide();
     }
     else
     {
-        document.getElementById('select').innerHTML="select";
-        document.getElementById('checkbox').style.display='none';
-        $('input:checkbox, label#checkbox').hide();
+        $('#select').text("select");
+        $('div#checkbox, input:checkbox:first-child').hide();
+        $('#title, div#form_submit').show();
     }
 }
+
 function checkall()
 {
     var boxes = $('table').find(':checkbox:checked').toArray();
@@ -30,9 +39,21 @@ function checkall()
 $(document).ready(function(){
     $('th').click(function(){
         var table = $(this).parents('table:first');
-        var rows = table.find("tr:gt(0)").toArray().sort(sortfunction(a, b, column))
+        var rows = table.find("tr:gt(0)").toArray();
+        for(i = 0; i < rows.length; i++)
+        {
+            console.log(rows[i]);
+        }
     })
 })
+
+function ordercheck(order)
+{
+    if (order())
+    {
+        
+    }
+}
 
 function outersort(a, b, column)
 {

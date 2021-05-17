@@ -9,18 +9,29 @@
 <body>
 
     <h3 id = "title">Scraped Feeds</h3>
+    <h3><div id = "checkbox">Select an element with checkbox.</div></h3>
 
     <form method="POST">
         <input type="submit" name = "scrape" value = "scrape" onclick="scrapeloading();">
-        <label id = "select" onclick = "selectbox();">select</label>
-        <br>
-        <input id = "checkbox" type="submit" name = "delete" value = "delete">
-        <label id = "checkbox" onclick = "checkall();">check all</label>
+        <label id = "select" onclick = "selectbox();">select</label><br>
+        
+        <div id = "checkbox">
+            <input type="submit" name = "delete" value = "delete">
+            <label onclick = "checkall();">check all</label>    
+        </div>
 
         <div id="loading"></div>
 
         <br>
         <label id = "error">Error : {{msg}}</label>
+        <br>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <br>
 
         <div id="content">
