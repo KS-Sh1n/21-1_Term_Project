@@ -9,15 +9,33 @@ from selenium import webdriver
 from .db import _instance_path
 
 def tuple_to_sitedata_dict(**kwargs):
+    """ (**kwargs) -> dictionary
+
+    Receive value from sitedata table, with a corresponding key.
+
+    if there are multiple values in a single sitedata column, split them with a "," and make it a single list.
+
+    >>> tuple_to_sitedata_dict(a = "1", b = "2, 3", c = "asd")
+    {"a" : 1, "b" : ["2", "3"], "c" : "asd"}
+    """
     for key, value in kwargs.items():
         if type(value) is str and "," in value:
             kwargs[key] = value.split(sep = ",")
     return kwargs
 def extract_post_number(href, query):
+    """ (str, str) -> int
 
+    Extract post number from site link, with a predetermined query to specify location of post number.
+
+    >>> extract_post_number("https://www.aaaaa.com/?no=123456", "no")
+    123456
+    """
     href_postnum_list = []
     href_postnum = 0
+    # index of query inside of link string
     query_index = href.find(query)
+    # if query is "no" and link includes no=123...
+    # search_start_index points to 1
     search_start_index = query_index + len(query) + 1
 
     for i in range(int(search_start_index), len(href)):
@@ -25,6 +43,7 @@ def extract_post_number(href, query):
             # Temporary reversed list of post number
             href_postnum_list.insert(0, int(href[i]))
         else:
+            # Finish searching upon reaching nondigit
             break
 
     # Return ordered int from reversed list

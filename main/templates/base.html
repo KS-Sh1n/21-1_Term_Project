@@ -9,18 +9,18 @@
 <body>
 
     <h3 id = "title">Scraped Feeds</h3>
-    <h3><div id = "checkbox">Select an element with checkbox.</div></h3>
+    <h3><div id = "checkbox">Select an element you want to delete. click "check all" to select everything.</div></h3>
 
     <form method="POST">
-        <input type="submit" name = "scrape" value = "scrape" onclick="scrapeloading();">
+        <div id="loading"></div>
+        <input type="submit" name = "scrape" value = "scrape" onclick="scrapeloading();"><br>
+
         <label id = "select" onclick = "selectbox();">select</label><br>
-        
+
         <div id = "checkbox">
             <input type="submit" name = "delete" value = "delete">
             <label onclick = "checkall();">check all</label>    
         </div>
-
-        <div id="loading"></div>
 
         <br>
         <label id = "error">Error : {{msg}}</label>
@@ -44,9 +44,9 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Site</th>
-                        <th>Type</th>
-                        <th>Scraped At</th>
+                        <th onclick = "tablesort(1);">Site<br><label id = sorted_1></label></bt></th>
+                        <th onclick = "tablesort(2);">Type<br><label id = sorted_2></label></th>
+                        <th onclick = "tablesort(3);">Scraped At<br><label id = sorted_3></label></th>
                         <th>Title</th>
                         <th>Author</th>
                     </tr>

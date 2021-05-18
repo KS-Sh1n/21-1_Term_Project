@@ -63,7 +63,7 @@ def insert():
                 flash("success")
                 # redirect to "end" the form (fresh state)
                 return redirect(url_for("insert.insert")) 
-            
+
             # Delete sitedata table elements
             elif "delete" in request.form:
                 # want not to execute when no site has been selected.
