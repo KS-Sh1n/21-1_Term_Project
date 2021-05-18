@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, render_template, request, redirect, url_for
 from .db import get_db, site_data_query, site_feed_query
+from .scraper import test_feed
 
 # Declare blueprint
 bp = Blueprint('insert', __name__, url_prefix='/insert')
@@ -56,11 +57,26 @@ def insert():
                 cur.execute(site_data_query)
                 cur.execute(site_feed_query)
 
-                cur.executemany("INSERT INTO sitedata VALUES "
-                    "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
-                con.commit()
+                # Check if every element of form has been filled
+                if "" in request.form.values():
+                    flash("Fill out every information to add site to table")
+                    return redirect(url_for("insert.insert"))
+                # Check for uniqueness of sitename
+                elif (request.form["sitename"], ) in cur.execute("SELECT sitename FROM sitedata").fetchall():
+                    flash("Sitename must be unique per sitedata in table.")
+                    return redirect(url_for("insert.insert"))
 
-                flash("success")
+                # Test scraping to assess validity
+                test = test_feed(request.form)
+                if test != "success":
+                    flash("Test scraping with entered information failed. Please double-check what you entered and try again.")
+                    flash(test)
+                else:
+                    cur.executemany("INSERT INTO sitedata VALUES "
+                    "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
+                    flash(test)
+                    con.commit()
+
                 # redirect to "end" the form (fresh state)
                 return redirect(url_for("insert.insert")) 
 

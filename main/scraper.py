@@ -7,6 +7,7 @@ from datetime import datetime
 from re import compile
 from selenium import webdriver
 from .db import _instance_path
+from flask import flash
 
 def tuple_to_sitedata_dict(**kwargs):
     """ (**kwargs) -> dictionary
@@ -80,6 +81,8 @@ def update_feed():
             title_query = url_tuple[6],
             author_query = url_tuple[7],
             js_included = url_tuple[8])
+
+        flash(url["sitename"])
 
         # Latest post number from DB for comparison
         current_latest_postnum = cur.execute(
@@ -183,3 +186,71 @@ def update_feed():
         print(new_post_index, "new feeds discovered in this iteration\n")
     else:
         print("no new feed discovered in this iteration\n")
+def test_feed(url):
+    try:
+        # For debugging purpose
+        print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))  
+        print(url)
+
+        # Send HTTP request to the given URL
+        # Retrieves the HTML data that server sends
+        page = requests.get(url["scrape_address"])
+
+        # Construct BeautifulSoup
+        bs = BeautifulSoup(page.content, 'html.parser')
+
+        #To identify feed link
+        bs_results = bs.find_all(class_ = url["link_query"])
+
+        # Scrape up to 3 times since this scraping is for testing
+        i = 0
+
+        # Dive into each page element
+        for page in bs_results:
+            
+            temp_link = page.find('a', href = compile(url["postnum_query"]))
+
+            # Filter out garbage value
+            if temp_link is None:
+                continue
+
+            page_link = url["main_address"] + temp_link['href']
+
+            page_postnum = extract_post_number(page_link, url["postnum_query"])
+
+            if("js_included" in url.keys()): # If a site uses Javascript
+                # Using selenium
+                browser = webdriver.Edge()
+
+                # Open browser
+                browser.get(page_link)
+                bs2 = BeautifulSoup(browser.page_source, 'html.parser')
+
+                # After getting page source, close browser
+                browser.close()
+
+            else: # No Javascript
+                # Send HTTP request to the given URL
+                # Retrieves the HTML data that server sends
+                link_resp = requests.get(page_link)
+
+                # Construct BeautifulSoup
+                bs2 = BeautifulSoup(link_resp.content, 'html.parser')
+
+            # Find title, author in the link
+            page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
+            page_title = bs2.find(class_ = url["title_query"]).text.strip()
+            page_author = bs2.find(class_ = url["author_query"]).text.strip()
+
+            print(page_postnum)
+            print(page_postdate)
+            print(page_title)
+            print(page_author)
+            print(page_link)
+
+            i += 1
+            if i >= 3:
+                return "success"
+
+    except Exception as e:
+        return(str(e))
