@@ -1,13 +1,20 @@
 import telegram
 
 # Telegram Bot Configuration
-bot = telegram.Bot(token = '1422791065:AAH_txqti5v5CbuRNTtgU-OEw7eTvpkmUfw')
+bot = telegram.Bot(token = '1822963809:AAEKMWyn9uBHXQ_m6D4yctWLcmC9bpsU8us')
 chat_id = 1327186896
 
-bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(
-    1, 2, 3, 4)
-
-# Send real-time notification
-bot.send_message(
+a = bot.send_message(
     chat_id = chat_id, 
-    text= "12312")
+    text = "." * 40
+    )
+id = a.message_id
+print(id)
+
+'''
+ b = bot.delete_message(
+    chat_id = chat_id,
+    message_id = 153,
+)
+print(b)
+'''

@@ -83,7 +83,7 @@ function zero_matrix(row, column)
     return $(row).children('td').eq(column).text();
 }
 
-function ascendingcheck(row, index)
+function ascendingcheck(index)
 {
     switch(index)
     {

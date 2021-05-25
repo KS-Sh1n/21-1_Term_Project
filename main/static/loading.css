@@ -1,18 +1,32 @@
-div#loading {
+div#loading
+{
     width: 300px;
     height: 300px;
     display: none;
     background: url(Loading.gif) no-repeat;
-    }
-div#checkbox{
+}
+.contents
+{
+    width: 50%;
+    position: absolute;
+}
+.left
+{
+    left: 0;
+}
+.right
+{
+    right: 0;
+}
+div#checkbox
+{
     display: none;
 }
-div#confirmreset{
+div#confirmreset
+{
     display: none;
 }
-[type = checkbox]:first-child{
+[type = checkbox]:first-child
+{
     display: none;
-}
-table {
-    size: "100%";
 }

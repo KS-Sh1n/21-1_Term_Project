@@ -67,6 +67,7 @@ def init_app():
             # Delete button to remove feeds from table
             # Appears after select button is clicked
             elif "delete" in request.form:
+                print(request.form)
                 cur.executemany("DELETE FROM sitefeed WHERE link in (?)", get_checked_site(request.form))
                 con.commit()
                 flash("feeds have been deleted.")
