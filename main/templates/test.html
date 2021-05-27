@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <head>
-
     <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='template.js') }}"></script>
     <script src="../static/popper.min.js"></script>
@@ -9,65 +8,235 @@
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
 
     <style>
-        [class *= "col"] {
+        [class *= "col"]#title {
             text-align: center;
-            background-color:rgb(60, 160, 60);
+            background-color:rgb(50, 160, 50);
             border:3px solid rgb(0, 0, 0);
-            color:white;
+            color:rgb(255, 255, 255);
+            margin-left: 10px;
+            margin-right: 10px;
+            height: auto;
         }
-        #feed {
-            text-align:left;
+        [class *= "col"]#preview {
+            text-align: center;
+            background-color:rgb(0, 255, 255);
+            border-top:1.5px solid rgb(0, 0, 0);
+            border-bottom:3px solid rgb(0, 0, 0);
+            border-left:3px solid rgb(0, 0, 0);
+            border-right:3px solid rgb(0, 0, 0);
+            width: calc(100% - 438px);
+            height: 1140px;
+            margin-right: 10px;
+        }
+        .pagination,
+        #feed
+        {
+            background-color:rgb(140, 140, 140);
+            border-top:1.5px solid rgb(0, 0, 0);
+            border-bottom:1.5px solid rgb(0, 0, 0);
+            border-left:3px solid rgb(0, 0, 0);
+            border-right:3px solid rgb(0, 0, 0);
+            color:rgb(255, 255, 255);
+            max-width: 768px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .pagination
+        {
+            text-align: center;
+            height: 50px;
+        }
+        #header
+        {
+            text-align: center;
+            background-color:rgb(80, 140, 80);
+            border-top:1.5px solid rgb(0, 0, 0);
+            border-bottom:1.5px solid rgb(0, 0, 0);
+            border-left:3px solid rgb(0, 0, 0);
+            border-right:3px solid rgb(0, 0, 0);
+            color:rgb(255, 255, 255);
+            max-width: 768px;
+            margin-left: 10px;
+            margin-right: 10px;
+            height: 40px;
+        }
+        p#feed_title,
+        p#feed_date,
+        p#feed_author
+        {
+            height: 24px;
+            margin-bottom: 4px;
+            padding: 2px;
+        }
+        p#feed_link
+        {
+            height: 30px;
         }
     </style>
-
 </head>
 <body>
-    <div class="container">
+    <div class="container-xxl">
         <div class="row">
-            <div class="col"><h1>GRID PRACTICE</h1></div>
+            <div class="col" id="title"><h1>GRID PRACTICE</h1></div>
         </div>
     </div>
-    <div class="container">
+    <div class="container-xxl">
         <div class="row">
-            <div class="col-md-5 col-12">sort</div>
-            <div class="col-7 d-none d-md-block">preview</div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="row" id = "feed">
-                    <div class="col-12">Site Scraped at<br><a href = "">Title</a><br>Author</div>
+            <div class="col gx-0">
+                <div class="row" id = "header">
+                    <div class="col-12">
+                        Sotring in here
+                    </div>
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Sitename</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date"> 15:35 2021/05/21</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">경희대학교 국제캠퍼스</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
                 </div>
                 <div class="row" id = "feed">
-                    <div class="col-12">Site<br><a href = "">Title</a><br>Author</div>
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
+                </div>
+                <div class="row" id = "feed">
+                    <div class="col-6">
+                            <p id = "feed_title">Site</p>
+                    </div>
+                    <div class="col-6">
+                            <p class= "text-end" id = "feed_date">Scraped At</p>
+                    </div>
+                    <div class="col-12">
+                        <p id = "feed_link"><a href = "">[한국장학재단]2021-1학기 푸른등대 삼성기부장학사업 신규 장학생 선발 안내(~06.01.까지)</a></p>
+                    </div>
+                    <div class="col-12">
+                        <p class= "text-end" id = "feed_author">Author</p>
+                    </div>     
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="pagination">
+                            page number goes here...
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-7 d-none d-md-block gx-0"><iframe src="http://127.0.0.1:5000/" name = "preview" width= "100%" height = "100%"></iframe></div>
+            <div class="col-12 d-none d-md-block gx-0" id="preview"><iframe src="http://127.0.0.1:5000/" name = "preview" width= "100%" height = "100%"></iframe></div>
         </div>
     </div>
 </body>
