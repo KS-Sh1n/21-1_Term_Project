@@ -3,10 +3,7 @@
 
     <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='template.js') }}"></script>
-    <script src="../static/popper.min.js"></script>
-    <script src="../bootstrap/js/bootstrap.js"> </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
-    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
 
 </head>
 <body>
@@ -21,8 +18,8 @@
         <label id = "select" onclick = "selectbox();">select</label><br>
 
         <div id = "checkbox">
-            <input type="submit" name = "delete" value = "delete">
-            <label onclick = "checkall();">check all</label>    
+            <button type="submit" name = "delete">delete</button>
+            <label onclick = "checkall();">check all</label>
         </div>
 
         <br>
@@ -53,19 +50,35 @@
                     </tr>
                 </thead>
                 <tbody>
-                        {% for i in sitefeed %}
+                        {% for i in sitefeed.items %}
                         <tr>
-                            <td><input type="checkbox" name = {{ i[6] }}></td>
-                            <td>{{ i[0] }}</td>
-                            <td>{{ i[1] }}</td>
-                            <td>{{ i[2] }}</td>
-                            <td><a href = {{ i[6] }} target = "preview">{{ i[4] }}</a></td>
-                            <td>{{ i[5] }}</td>
+                            <td><input type="checkbox" name = {{ i.link }}></td>
+                            <td>{{ i.sitename }}</td>
+                            <td>{{ i.sitetype }}</td>
+                            <td>{{ i.postdate }}</td>
+                            <td><a href = {{ i.link }} target = "preview">{{ i.title }}</a></td>
+                            <td>{{ i.author }}</td>
                         </tr>
                         {% endfor %}
                 </tbody>
             </table>
+            {% if sitefeed.has_prev %}
+            <a href="{{ url_for('index', page=sitefeed.prev_num) }}">&lt;&lt; Newer posts</a>
+            {% else %}
+            &lt;&lt; Newer posts
+
+            {% endif %}
+    
+            |
+    
+            {% if sitefeed.has_next %}
+            <a href="{{ url_for('index', page=sitefeed.next_num) }}">Older posts &gt;&gt;</a>
+            {% else %}
+            Older posts &gt;&gt;
+
+            {% endif %}
         </div>
+
         <div class="contents right">
             <iframe src="default.asp" name = "preview" width = "500px" height="1000px"></iframe>
         </div>

@@ -1,80 +1,37 @@
 <!DOCTYPE html>
 <head>
-    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='template.js') }}"></script>
+    <script src="../static/jquery-3.6.0.min.js"></script>
     <script src="../static/popper.min.js"></script>
-    <script src="../bootstrap/js/bootstrap.js"> </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
-    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <script src="../static/bootstrap/js/bootstrap.js"> </script>
+    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/style.css">
 
-    <style>
-        [class *= "col"]#title {
-            text-align: center;
-            background-color:rgb(50, 160, 50);
-            border:3px solid rgb(0, 0, 0);
-            color:rgb(255, 255, 255);
-            margin-left: 10px;
-            margin-right: 10px;
-            height: auto;
-        }
-        [class *= "col"]#preview {
-            text-align: center;
-            background-color:rgb(0, 255, 255);
-            border-top:1.5px solid rgb(0, 0, 0);
-            border-bottom:3px solid rgb(0, 0, 0);
-            border-left:3px solid rgb(0, 0, 0);
-            border-right:3px solid rgb(0, 0, 0);
-            width: calc(100% - 438px);
-            height: 1140px;
-            margin-right: 10px;
-        }
-        .pagination,
-        #feed
-        {
-            background-color:rgb(140, 140, 140);
-            border-top:1.5px solid rgb(0, 0, 0);
-            border-bottom:1.5px solid rgb(0, 0, 0);
-            border-left:3px solid rgb(0, 0, 0);
-            border-right:3px solid rgb(0, 0, 0);
-            color:rgb(255, 255, 255);
-            max-width: 768px;
-            margin-left: 10px;
-            margin-right: 10px;
-        }
-        .pagination
-        {
-            text-align: center;
-            height: 50px;
-        }
-        #header
-        {
-            text-align: center;
-            background-color:rgb(80, 140, 80);
-            border-top:1.5px solid rgb(0, 0, 0);
-            border-bottom:1.5px solid rgb(0, 0, 0);
-            border-left:3px solid rgb(0, 0, 0);
-            border-right:3px solid rgb(0, 0, 0);
-            color:rgb(255, 255, 255);
-            max-width: 768px;
-            margin-left: 10px;
-            margin-right: 10px;
-            height: 40px;
-        }
-        p#feed_title,
-        p#feed_date,
-        p#feed_author
-        {
-            height: 24px;
-            margin-bottom: 4px;
-            padding: 2px;
-        }
-        p#feed_link
-        {
-            height: 30px;
-        }
-    </style>
+    
 </head>
 <body>
+    <script>
+        //Temp Javascript here
+        // Show checkbox at the left site of table to modify it.
+        function selectbox()
+        {
+            if ($('.checkbox').is(":hidden"))
+            {
+                $('#select_img').attr("src", "x.svg");
+                $('.checkbox').show();
+                $('.notcheckbox').hide();
+                //$('div#checkbox, input:checkbox:first-child').show();
+                //$('#title, div#form_submit, [name = scrape]').hide();
+            }
+            else
+            {
+                $('#select_img').attr("src", "check.svg");
+                $('.checkbox').hide();
+                $('.notcheckbox').show();
+                //$('div#checkbox, input:checkbox:first-child').hide();
+                //$('#title, div#form_submit, [name = scrape]').show();
+            }
+        }
+    </script>
     <div class="container-xxl">
         <div class="row">
             <div class="col" id="title"><h1>GRID PRACTICE</h1></div>
@@ -85,8 +42,18 @@
             <div class="col gx-0">
                 <div class="row" id = "header">
                     <div class="col-12">
-                        Sotring in here
-                    </div>
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><label class="btn btn-outline-dark btn-sm" onclick="selectbox();"><img id = "select_img" src="check.svg"></label></li>
+                            
+                            <li class="list-inline-item"><div class="checkbox"><label class="btn btn-outline-dark btn-sm" onclick = "checkall();"><img src="check-all.svg"></label></div></li>
+
+                            <li class="list-inline-item"><div class="checkbox"><button type="submit" class="btn btn-outline-dark btn-sm" name = "delete"><img src="trash2-fill.svg"></button></div></li>
+
+                            <li class="list-inline-item"><div class="notcheckbox"><button type="submit" class="btn btn-outline-dark btn-sm" name = "scrape" onclick="scrapeloading();">UPDATE</button></div></li>
+
+                            <li class="list-inline-item"><div class="notcheckbox"><button class="btn btn-outline-dark btn-sm"><a href="#"><img src="plus.svg"></a></button></div></li>
+                        </ul>
+                    </div>                            
                 </div>
                 <div class="row" id = "feed">
                     <div class="col-6">
@@ -230,9 +197,15 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <div class="pagination">
-                            page number goes here...
-                        </div>
+                        <nav aria-label="Sitefeed navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>

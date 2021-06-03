@@ -14,6 +14,7 @@ function scrapeloading()
     $('#title').text("Scraping feeds...");
 }
 
+
 // Show checkbox at the left site of table to modify it.
 function selectbox()
 {

@@ -1,0 +1,117 @@
+*
+{
+    text-shadow: 1px 1px 1px rgb(0, 0, 0);
+}
+a
+{
+    color:rgb(20, 20, 20);
+    text-decoration: none;
+}
+
+[class *= "col"]#title
+{
+    text-align: center;
+    background-color:rgb(50, 160, 50);
+    border:3px solid rgb(0, 0, 0);
+    color:rgb(255, 255, 255);
+    margin-left: 10px;
+    margin-right: 10px;
+    height: auto;
+}
+[class *= "col"]#preview
+{
+    text-align: center;
+    background-color:rgb(255, 255, 255);
+    border-top:1.5px solid rgb(0, 0, 0);
+    border-bottom:3px solid rgb(0, 0, 0);
+    border-left:3px solid rgb(0, 0, 0);
+    border-right:3px solid rgb(0, 0, 0);
+    width: calc(100% - 438px);
+    height: 1145px;
+    margin-right: 10px;
+}
+#feed,
+#pagination
+{
+    border-top:1.5px solid rgb(0, 0, 0);
+    border-bottom:1.5px solid rgb(0, 0, 0);
+    border-left:3px solid rgb(0, 0, 0);
+    border-right:3px solid rgb(0, 0, 0);
+    color:rgb(255, 255, 255);
+    max-width: 768px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+a.page
+{
+    color:rgb(255, 255, 255);
+}
+.end
+{
+    color:rgb(120, 120, 120);
+    pointer-events: none;
+}
+[color = "khu_general"]
+{
+    background-color:rgb(200, 0, 0);
+}
+[color = "khu_scholarship"]
+{
+    background-color:rgb(200, 40, 40);
+}
+[color = "khu_undergraduate"]
+{
+    background-color:rgb(200, 200, 0);
+}
+[color = "saramin"]
+{
+    background-color:rgb(0, 200, 0);
+}
+#pagination
+{
+    background-color:rgb(140, 140, 140);
+    text-align: center;
+    height: 50px;
+}
+#header
+{
+    background-color:rgb(200, 200, 200);
+    border-top:1.5px solid rgb(0, 0, 0);
+    border-bottom:1.5px solid rgb(0, 0, 0);
+    border-left:3px solid rgb(0, 0, 0);
+    border-right:3px solid rgb(0, 0, 0);
+    color:rgb(255, 255, 255);
+    max-width: 768px;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 44px;
+}
+p#feed_title,
+p#feed_date,
+p#feed_author
+{
+    height: 24px;
+    margin-bottom: 4px;
+    padding: 2px;
+}
+p#feed_link
+{
+    height: 30px;
+}
+.box_hidden,
+.checkbox
+{
+    display: none;
+}
+.filter
+{
+    position: absolute;
+    display: none;
+    left:0;
+    top:0;
+    background: url(filter.jpg);
+    width:100%;
+    height:1205px;
+    filter:opacity(0.5);
+    z-index: 1;
+}

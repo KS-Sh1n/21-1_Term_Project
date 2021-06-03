@@ -46,5 +46,5 @@ site_feed_query = (
     "postnum INTEGER NOT NULL,"
     "title TEXT NOT NULL,"
     "author TEXT NOT NULL,"
-    "link TEXT NOT NULL,"
+    "link TEXT NOT NULL PRIMARY KEY,"
     "FOREIGN KEY(sitename) REFERENCES sitedata(sitename))")

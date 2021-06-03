@@ -53,7 +53,6 @@ def extract_post_number(href, query):
 
     return href_postnum
 def update_feed():
-
     # Telegram Bot Configuration
     bot = telegram.Bot(token = '1822963809:AAEKMWyn9uBHXQ_m6D4yctWLcmC9bpsU8us')
     chat_id = 1327186896
@@ -186,10 +185,6 @@ def update_feed():
         print("no new feed discovered in this iteration\n")
 def test_feed(url):
     try:
-        # For debugging purpose
-        print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))  
-        print(url)
-
         # Send HTTP request to the given URL
         # Retrieves the HTML data that server sends
         page = requests.get(url["scrape_address"])
@@ -200,46 +195,47 @@ def test_feed(url):
         #To identify feed link
         bs_results = bs.find_all(class_ = url["link_query"])
 
-        
-        temp_link = page.find('a', href = compile(url["postnum_query"]))
+        for page in bs_results:            
+            temp_link = page.find('a', href = compile(url["postnum_query"]))
 
-        # Filter out garbage value
-        if temp_link is None:
-            raise Exception
+            # Filter out garbage value
+            if temp_link is None:
+                continue
 
-        page_link = url["main_address"] + temp_link['href']
+            page_link = url["main_address"] + temp_link['href']
 
-        page_postnum = extract_post_number(page_link, url["postnum_query"])
+            page_postnum = extract_post_number(page_link, url["postnum_query"])
 
-        if("js_included" in url.keys()): # If a site uses Javascript
-            # Using selenium
-            browser = webdriver.Edge()
+            if("js_included" in url.keys()): # If a site uses Javascript
+                # Using selenium
+                browser = webdriver.Edge()
 
-            # Open browser
-            browser.get(page_link)
-            bs2 = BeautifulSoup(browser.page_source, 'html.parser')
+                # Open browser
+                browser.get(page_link)
+                bs2 = BeautifulSoup(browser.page_source, 'html.parser')
 
-            # After getting page source, close browser
-            browser.close()
+                # After getting page source, close browser
+                browser.close()
 
-        else: # No Javascript
-            # Send HTTP request to the given URL
-            # Retrieves the HTML data that server sends
-            link_resp = requests.get(page_link)
+            else: # No Javascript
+                # Send HTTP request to the given URL
+                # Retrieves the HTML data that server sends
+                link_resp = requests.get(page_link)
 
-            # Construct BeautifulSoup
-            bs2 = BeautifulSoup(link_resp.content, 'html.parser')
+                # Construct BeautifulSoup
+                bs2 = BeautifulSoup(link_resp.content, 'html.parser')
 
-        # Find title, author in the link
-        page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
-        page_title = bs2.find(class_ = url["title_query"]).text.strip()
-        page_author = bs2.find(class_ = url["author_query"]).text.strip()
+            # Find title, author in the link
+            page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
+            page_title = bs2.find(class_ = url["title_query"]).text.strip()
+            page_author = bs2.find(class_ = url["author_query"]).text.strip()
 
-        print(page_postnum)
-        print(page_postdate)
-        print(page_title)
-        print(page_author)
-        print(page_link)
+            print(page_postnum)
+            print(page_postdate)
+            print(page_title)
+            print(page_author)
+            print(page_link)
+            return "success"
 
     except Exception as e:
         return(str(e))

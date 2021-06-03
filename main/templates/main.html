@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<head>
+
+    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"> </script>
+    <script src="{{ url_for('static', filename='template2.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+</head>
+
+<body>
+    <div class="filter"></div>
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col" id="title"><h1>GRID PRACTICE</h1></div>
+        </div>
+    </div>
+    <div class="container-xxl">
+        <div class="row">
+            <div class="col gx-0">
+                <!--<form method="POST">-->
+                    <div class="row" id = "header">
+                        <div class="col-12">
+                            <ul class="list-inline">
+                                <li class="list-inline-item"><label id = "select" class="btn btn-secondary" onclick="selectbox();"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16"> <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg></label></li>
+                                
+                                <li class="list-inline-item"><div class="checkbox"><label class="btn btn-secondary" onclick = "checkall();"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-all" viewBox="0 0 16 16">
+                                <path d="M8.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L2.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093L8.95 4.992a.252.252 0 0 1 .02-.022zm-.92 5.14.92.92a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 1 0-1.091-1.028L9.477 9.417l-.485-.486-.943 1.179z"/></svg></label></div></li>
+
+                                <li class="list-inline-item"><div class="checkbox"><button type="submit" class="btn btn-secondary" name = "delete"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
+                                <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/></svg></button></div></li>
+                                
+                                <li class="list-inline-item"><div class="notcheckbox"><button type="submit" class="btn btn-primary" onclick="scrapeloading();" name="scrape"><span class="visually-hidden"></span>UPDATE</button></div></li>
+
+                                <li class="list-inline-item"><div class="notcheckbox"><button class="btn btn-secondary"><a href={{ url_for('insert.insert') }}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg></a></button></div></li>
+
+                                <li class="list-inline-item"><div class="notcheckbox dropend"><button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">Sort　</button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li> <a class = "dropdown-item" href="{{ url_for('index', sort=latest) }}">Latest</a></li>
+                                    <li><button class="dropdown-item" type="submit" name = "name">Name</button></li>
+                                    <li><button class="dropdown-item" type="submit" name = "type">Type</button></li>
+                                </ul></div></li>
+                            </ul>
+                        </div>                            
+                    </div>
+                    {% for i in sitefeed.items %}
+                    <div class="row shadow" id = "feed" color = {{ i.sitename }}>
+                        <div class="col-6">
+                                <p id="feed_title">{{ i.sitename }} <input type="checkbox" class= "box_hidden" name = {{ i.link }}></p>
+                        </div>
+                        <div class="col-6">
+                                <p class="text-end" id="feed_date"> {{ i.postdate }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p id="feed_link"><a href={{ i.link }} target="preview"><b>{{ i.title }}</b></a></p>
+                        </div>
+                        <div class="col-12">
+                            <p class="text-end" id="feed_author">{{ i.author }}</p>
+                        </div>     
+                    </div>
+                    {% endfor %}
+                </form>
+                <div class="row" id = "pagination">
+                    <div class="col-6">
+                            {% if sitefeed.has_prev %}
+                            <a class = "page" href="{{ url_for('index', page=sitefeed.prev_num) }}">&lt;&lt; Prev page</a>
+                            {% else %}
+                            <p class = "end">&lt;&lt; Prev page</p>
+                            {% endif %}
+                    </div>
+                    <div class="col-6">
+                            {% if sitefeed.has_next %}
+                            <a class = "page" href="{{ url_for('index', page=sitefeed.next_num) }}">Next page &gt;&gt;</a>
+                            {% else %}
+                            <p class = "end">Next page &gt;&gt;</p>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-none d-md-block gx-0" id="preview"><iframe src="about:blank" name = "preview" width= "100%" height = "100%"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
