@@ -79,7 +79,8 @@ def update_feed():
             postnum_query = url_tuple[5],
             title_query = url_tuple[6],
             author_query = url_tuple[7],
-            js_included = url_tuple[8])
+            sitecolor = url_tuple[8],
+            js_included = url_tuple[9])
 
         # Latest post number from DB for comparison
         current_latest_postnum = cur.execute(
@@ -113,7 +114,7 @@ def update_feed():
                 print('No more new feeds for {0}\n'.format(url["sitename"]))
                 break
 
-            if(url["js_included"]): # If a site uses Javascript
+            if(url["js_included"] == "Yes"): # If a site uses Javascript
                 # Using selenium
                 browser = webdriver.Edge()
 
@@ -149,12 +150,11 @@ def update_feed():
                     
             insert_feed_query = (
                 "INSERT INTO sitefeed "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)"
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             )
 
             insert_tuple = (
-            url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link
-            )
+            url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link, url["sitecolor"])
 
             bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(
                 url["sitename"].upper(), page_author, page_title, page_link)

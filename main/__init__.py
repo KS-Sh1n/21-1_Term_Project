@@ -38,9 +38,12 @@ def init_app():
     alc_db.Model.metadata.reflect(bind=alc_db.engine)
 
     # SQLAlchemy feed Database
-    class Feed(alc_db.Model):
-        __table__ = alc_db.Model.metadata.tables["sitefeed"]
-        item_per_page = 10
+    try:
+        class Feed(alc_db.Model):
+            __table__ = alc_db.Model.metadata.tables["sitefeed"]
+            item_per_page = 10
+    except:
+        print("No Table")
     
     # Initialize database, blueprint, and scheduler
     from . import db, insert
@@ -55,7 +58,6 @@ def init_app():
         con = db.get_db()
         cur = con.cursor()
         sitefeed_result= []
-        msg = ""
         
         # Scheduler to scrape feed at every 0 / 30 minute
         scheduler.add_job(
@@ -65,8 +67,26 @@ def init_app():
         id = "scrape",
         replace_existing= True)
 
+        sorting = request.args.get('sort', "latest")
         page = request.args.get('page', 1, type=int)
-        sitefeed_result= Feed.query.order_by(Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
+
+        # Update color
+        sitedata_color_list = cur.execute("SELECT sitename, sitecolor FROM sitedata").fetchall()
+        for feed in Feed.query.all():
+            for color in sitedata_color_list:
+                if feed.sitename == color[0] and feed.sitecolor != color[1]:
+                    feed.sitecolor = color[1]
+        alc_db.session.commit()
+
+        # Get feed from table with pagination & sorting method
+        if sorting == "latest":
+            sitefeed_result= Feed.query.order_by(Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
+        elif sorting == "name":
+            sitefeed_result= Feed.query.order_by(Feed.sitename, Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
+        elif sorting == "type":
+            sitefeed_result= Feed.query.order_by(Feed.sitetype, Feed.sitename, Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
+        else:
+            sitefeed_result="No Data"
         alc_db.session.commit()
 
         if request.method == 'POST':
@@ -75,6 +95,7 @@ def init_app():
                 if "scrape" in request.form:
                     update_feed()
                     con.commit()
+                    flash("Feeds have been updated")
                     return redirect(url_for("index"))
 
                 # Delete button to remove feeds from table
@@ -83,20 +104,9 @@ def init_app():
                     print(request.form)
                     cur.executemany("DELETE FROM sitefeed WHERE link in (?)", get_checked_site(request.form))
                     con.commit()
-                    flash("feeds have been deleted.")
+                    flash("Feeds have been deleted.")
                     return redirect(url_for("index"))
-                '''
-                #Sotring methods
-                elif "date" in request.form:
-                    sitefeed_result= Feed.query.order_by(Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
-                    alc_db.session.commit()
-                elif "name" in request.form:
-                    sitefeed_result= Feed.query.order_by(Feed.sitename,Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
-                    alc_db.session.commit()
-                elif "type" in request.form:
-                    sitefeed_result= Feed.query.order_by(Feed.sitetype,Feed.sitename,Feed.postdate.desc()).paginate(page, Feed.item_per_page, False)
-                    alc_db.session.commit()
-                '''
+
             # Error message if any error occured
             except Exception as e:
                 msg = (str(e))
@@ -108,6 +118,6 @@ def init_app():
         con.close()
 
         # Return template page
-        return render_template('main.html', msg = msg, sitefeed= sitefeed_result)
+        return render_template('main.html', sitefeed = sitefeed_result, page = page, sorting = sorting)
 
     return app

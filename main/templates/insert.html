@@ -1,105 +1,175 @@
 <!DOCTYPE html>
 <head>
 
-    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"> </script>
     <script src="{{ url_for('static', filename='template.js') }}"></script>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
 </head>
 <body>
-    <h3 id = "title">Add site data in this page.</h3>
-    <h3><div id = "checkbox">Select an element you want to delete/modify.<br> To modify data, write some data in the form and click "alter". </div></h3>
+    <div class="container-xxl">
+        <div class="row" id="title">
+            <div class="col-11"><h1>ADDSITE PAGE</h1></div>
+            <div class="col-1"><div class="notcheckbox"><a href={{ url_for('index') }}><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 14 14">
+                <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+                </svg></a></div></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-secondary" role="alert">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <h4>{{ message }}</h4>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
 
     <form method="POST">
-        <div id = "data_form">
-            <label for="=sitename">sitename</label>
-            <input type="text" id="sitename" name="sitename"><br>
-        
-            <label for="=main_address">main_address</label>
-            <input type="text" id="main_address" name="main_address" ><br>
-        
-            <label for="=scrape_address">scrape_address</label>
-            <input type="text" id="scrape_address" name="scrape_address"><br>
-        
-            <label for="=sitetype">sitetype</label>
-            <input type="text" id="sitetype" name="sitetype"><br>
-    
-            <label for="=link_query">link_query</label>
-            <input type="text" id="link_query" name="link_query"><br>
-    
-            <label for="=postnum_query">postnum_query</label>
-            <input type="text" id="postnum_query" name="postnum_query"><br>
-    
-            <label for="=title_query">title_query</label>
-            <input type="text" id="title_query" name="title_query"><br>
-    
-            <label for="=author_query">author_query</label>
-            <input type="text" id="author_query" name="author_query"><br>
-    
-            <label for="=js_included">javascript</label>
-            <input type="checkbox" name="js_included"><br>
+        <div class = "container-xxl">
+            <div class="row gx-2">
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="sitename" name="sitename"placeholder="　">
+                        <label for="sitename">Sitename</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="main_address" name="main_address"placeholder="　">
+                        <label for="main_address">Base Address for Scraping</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="scrape_address" name="scrape_address"placeholder="　">
+                        <label for="scrape_address">Additional Address for Scraping</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="sitetype" name="sitetype"placeholder="　">
+                        <label for="sitetype">Type</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="col-sm-6 col-md-3">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="link_query" name="link_query"placeholder="　">
+                        <label for="link_query">Query for Link</label>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="postnum_query" name="postnum_query"placeholder="　">
+                        <label for="postnum_query">Query for Post No.</label>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="title_query" name="title_query"placeholder="　">
+                        <label for="title_query">Query for Title</label>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="author_query" name="author_query"placeholder="　">
+                        <label for="author_query">Query for Author</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="col-6">
+                    <label for="sitecolor" class="form-label">Choose your Color</label>
+                    <input type="color" name="sitecolor" class="form-control form-control-color">
+                </div>
+                <div class="col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="js_included">
+                        <label class="form-check-label" for="js_included">Check if a site uses JavaScript</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row gx-2">
+                <div class="col-2">
+                    <label id = "select" class="btn btn-secondary" onclick="selectbox();"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16"> <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg></label>
+                </div>
+                <div class="col-2">
+                    <div class = "notcheckbox">
+                        <button type="submit" class="btn btn-secondary" name="add"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg></button>
+                    </div>
+                    <div class = "checkbox">
+                        <button type="submit" class="btn btn-secondary" name = "delete"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash2-fill" viewBox="0 0 16 16">
+                            <path d="M2.037 3.225A.703.703 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2a.702.702 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225zm9.89-.69C10.966 2.214 9.578 2 8 2c-1.58 0-2.968.215-3.926.534-.477.16-.795.327-.975.466.18.14.498.307.975.466C5.032 3.786 6.42 4 8 4s2.967-.215 3.926-.534c.477-.16.795-.327.975-.466-.18-.14-.498-.307-.975-.466z"/></svg></button>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="notcheckbox">
+                        <label id = "reset" class="btn btn-danger" onclick = "confirmreset();"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
+                            <path d="M7.5 1v7h1V1h-1z"/>
+                            <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>
+                        </svg></label>
+                    </div>
+                    <div class="checkbox">
+                        <button type="submit" class="btn btn-secondary" name="alter"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg></button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id = "checkbox">
-            <input type="submit" name="delete" value="delete">
-            <input type="submit" name="alter" value="alter">    
+
+        <div class = "container-xxl">
+            <div class=" table-responsive-md sitedata">
+                <table class="table table-striped caption-top">
+                    <caption><h3>Current List of Scraped Sites</h3></caption>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Base Address</th>
+                            <th>Scraping link</th>
+                            <th>Type</th>
+                            <th>Link</th>
+                            <th>Post No.</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Color</th>
+                            <th>JS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for i in sitedata %}
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input checkbox" name = {{ i[0] }}></td>
+                                <td>{{ i[0] }}</td>
+                                <td>{{ i[1] }}</td>
+                                <td><a href = {{ i[2] }}>Link</a></td>
+                                <td>{{ i[3] }}</td>
+                                <td>{{ i[4] }}</td>
+                                <td>{{ i[5] }}</td>
+                                <td>{{ i[6] }}</td>
+                                <td>{{ i[7] }}</td>
+                                <td>{{ i[8] }}</td>
+                                <td>{{ i[9] }}</td>
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div id = "form_submit">
-            <input type="submit" name="add" value="add">
-            <label onclick = "confirmreset();">reset</label>
-        </div>
-
-        <label id = "select" onclick = "selectbox();">select</label>
-
-        <div id = "confirmreset">
-            <input type="submit" name="reset" value="yes">
-            <button>no</button> 
-        </div><br><br>
-
-        Error : {{msg}}
-        <br>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <br>
-        <button><a href={{ url_for("index") }}>mainpage</a></button>
-        <br>
-
-        <h3>Current List of Scraped Sites</h3>
-        <table style="width:100%">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Main Address</th>
-                    <th>Address for Scraping</th>
-                    <th>Type</th>
-                    <th>Query for Link</th>
-                    <th>Query for Post No.</th>
-                    <th>Query for Title</th>
-                    <th>Query for Author</th>
-                    <th>Javascript</th>
-                </tr>
-            </thead>
-            <tbody>
-                    {% for i in sitedata %}
-                    <tr>
-                        <td><input type="checkbox" name = {{ i[0] }}></td>
-                        <td>{{ i[0] }}</td>
-                        <td>{{ i[1] }}</td>
-                        <td><a href = {{ i[2] }}>Link</a></td>
-                        <td>{{ i[3] }}</td>
-                        <td>{{ i[4] }}</td>
-                        <td>{{ i[5] }}</td>
-                        <td>{{ i[6] }}</td>
-                        <td>{{ i[7] }}</td>
-                        <td>{{ i[8] }}</td>
-                    </tr>
-                    {% endfor %}
-            </tbody>
-        </table>
     </form>
 </body>

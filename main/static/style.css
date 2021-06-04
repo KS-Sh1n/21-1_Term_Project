@@ -7,18 +7,16 @@ a
     color:rgb(20, 20, 20);
     text-decoration: none;
 }
-
-[class *= "col"]#title
+#title
 {
     text-align: center;
-    background-color:rgb(50, 160, 50);
-    border:3px solid rgb(0, 0, 0);
-    color:rgb(255, 255, 255);
-    margin-left: 10px;
-    margin-right: 10px;
+    border-bottom:3px solid rgb(0, 0, 0);
+    color:rgb(0, 0, 0);
+    margin-left: 0px;
+    margin-right: 0px;
     height: auto;
 }
-[class *= "col"]#preview
+#preview
 {
     text-align: center;
     background-color:rgb(255, 255, 255);
@@ -27,13 +25,12 @@ a
     border-left:3px solid rgb(0, 0, 0);
     border-right:3px solid rgb(0, 0, 0);
     width: calc(100% - 438px);
-    height: 1145px;
+    height: 1129px;
     margin-right: 10px;
 }
 #feed,
 #pagination
 {
-    border-top:1.5px solid rgb(0, 0, 0);
     border-bottom:1.5px solid rgb(0, 0, 0);
     border-left:3px solid rgb(0, 0, 0);
     border-right:3px solid rgb(0, 0, 0);
@@ -51,22 +48,6 @@ a.page
     color:rgb(120, 120, 120);
     pointer-events: none;
 }
-[color = "khu_general"]
-{
-    background-color:rgb(200, 0, 0);
-}
-[color = "khu_scholarship"]
-{
-    background-color:rgb(200, 40, 40);
-}
-[color = "khu_undergraduate"]
-{
-    background-color:rgb(200, 200, 0);
-}
-[color = "saramin"]
-{
-    background-color:rgb(0, 200, 0);
-}
 #pagination
 {
     background-color:rgb(140, 140, 140);
@@ -75,8 +56,6 @@ a.page
 }
 #header
 {
-    background-color:rgb(200, 200, 200);
-    border-top:1.5px solid rgb(0, 0, 0);
     border-bottom:1.5px solid rgb(0, 0, 0);
     border-left:3px solid rgb(0, 0, 0);
     border-right:3px solid rgb(0, 0, 0);
@@ -85,6 +64,11 @@ a.page
     margin-left: 10px;
     margin-right: 10px;
     height: 44px;
+}
+ul.list-inline
+{
+    margin-top: 3px;
+    margin-bottom: 5px;
 }
 p#feed_title,
 p#feed_date,
@@ -99,9 +83,16 @@ p#feed_link
     height: 30px;
 }
 .box_hidden,
-.checkbox
+.checkbox,
+.confirmreset
 {
     display: none;
+}
+.alert
+{
+    padding: 4px;
+    display: none;
+    text-align: center;
 }
 .filter
 {

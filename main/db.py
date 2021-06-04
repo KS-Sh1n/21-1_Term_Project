@@ -36,6 +36,7 @@ site_data_query = (
     "postnum_query INTEGER NOT NULL,"
     "title_query TEXT NOT NULL,"
     "author_query TEXT NOT NULL,"
+    "sitecolor TEXT NOT NULL,"
     "js_included INTEGER)")
 
 site_feed_query = (
@@ -47,4 +48,5 @@ site_feed_query = (
     "title TEXT NOT NULL,"
     "author TEXT NOT NULL,"
     "link TEXT NOT NULL PRIMARY KEY,"
+    "sitecolor TEXT NOT NULL,"
     "FOREIGN KEY(sitename) REFERENCES sitedata(sitename))")

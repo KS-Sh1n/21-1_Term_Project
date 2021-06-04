@@ -36,9 +36,18 @@ def insert_value(form_value):
         if value == "on":
             yield "Yes"
             break
-        else:
-            yield 0
+        elif value in ("", "Yes", "No"):
+            yield "No"
             break
+        else:
+            yield value
+
+def uniqueness_test(form_tuple, ref_tuple):
+    for form in form_tuple:
+        for ref in ref_tuple:
+            if form in ref:
+                return True
+    return False
 
 @bp.route('/', methods=['GET', 'POST'])
 def insert():
@@ -49,6 +58,7 @@ def insert():
 
     if request.method == 'POST':
         try:
+            print(request.form)
             # Add sitedata table elements
             if "add" in request.form:
                 # Create table if not exists
@@ -56,12 +66,14 @@ def insert():
                 cur.execute(site_feed_query)
 
                 # Check if every element of form has been filled
-                if "" in request.form.values():
-                    flash("Fill out every information to add site to table")
-                    return redirect(url_for("insert.insert"))
+                for i in request.form.items():
+                    if (i[0] != "add" and i[1] == ""):
+                        flash("Fill out every information to add site")
+                        return redirect(url_for("insert.insert"))
+
                 # Check for uniqueness of sitename
-                elif (request.form["sitename"], ) in cur.execute("SELECT sitename FROM sitedata").fetchall():
-                    flash("Sitename must be unique per sitedata in table.")
+                if uniqueness_test((request.form["sitename"],request.form["sitecolor"]), cur.execute("SELECT sitename, sitecolor FROM sitedata").fetchall()):
+                    flash("Sitename and Sitecolor must be unique per sitedata in table.")
                     return redirect(url_for("insert.insert"))
 
                 # Test scraping to assess validity
@@ -71,8 +83,8 @@ def insert():
                     flash(test)
                 else:
                     cur.executemany("INSERT INTO sitedata VALUES "
-                    "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
-                    flash(test)
+                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(request.form.values()))])
+                    flash("Site has been added")
                     con.commit()
 
                 # redirect to "end" the form (fresh state)
@@ -83,7 +95,7 @@ def insert():
                 # want not to execute when no site has been selected.
                 cur.executemany("DELETE FROM sitedata WHERE sitename in (?)", get_checked_site(request.form))
                 con.commit()
-                flash("sites has been deleted.")
+                flash("Sites have been deleted.")
                 return redirect(url_for("insert.insert"))
             
             # Modify table elements (delete and recreate)
@@ -91,14 +103,14 @@ def insert():
                 checked_site = tuple(get_checked_site(request.form))
 
                 if len(checked_site) == 0:
-                    flash("select a site to modify")
+                    flash("Select a site to modify")
                 elif len(checked_site) != 1:
-                    flash("select only one site to modify")
+                    flash("Select only one site to modify")
                 else:
                     site_backup = cur.execute("SELECT * FROM sitedata WHERE sitename = ?", *checked_site).fetchall()
 
                     form_values = list(request.form.values())
-                    for i in range(len(form_values)):
+                    for i in range(len(site_backup[0])):
                         if form_values[i] == "":
                             form_values[i] = site_backup[0][i]
 
@@ -106,9 +118,9 @@ def insert():
                     # Reaplce it with a table with modified values
                     cur.execute("DELETE FROM sitedata WHERE sitename = ?", checked_site[0])
                     cur.executemany("INSERT INTO sitedata VALUES "
-                        "(?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(form_values))])
+                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [tuple(insert_value(form_values))])
                     con.commit()
-                    flash("successfully modified a table.")
+                    flash("Successfully modified a table.")
 
                 return redirect(url_for("insert.insert"))
 
@@ -117,11 +129,10 @@ def insert():
                 cur.execute("DROP TABLE sitedata")
                 cur.execute("DROP TABLE sitefeed")
                 con.commit()
-                flash("successfully deleted every table.")
-                return redirect(url_for("insert.insert"))
 
         except Exception as e:
             msg = str(e)
+            flash(msg)
 
     if (cur.execute(
         "SELECT name FROM sqlite_master WHERE type='table' and name = 'sitedata'")).fetchone() is not None:
@@ -130,4 +141,4 @@ def insert():
     con.commit()
     cur.close()
     con.close()
-    return render_template('insert.html', sitedata = sitedata_result, msg= msg)
+    return render_template('insert.html', sitedata = sitedata_result)
