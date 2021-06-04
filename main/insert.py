@@ -33,10 +33,8 @@ def insert_value(form_value):
     generator of ("a", "b", "c", 1)
     """
     for value in form_value:
-        if value not in ("add", "alter", "on"):
-            yield value
-        elif value == "on":
-            yield 1 
+        if value == "on":
+            yield "Yes"
             break
         else:
             yield 0
