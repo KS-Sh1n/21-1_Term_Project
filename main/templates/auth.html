@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+
+    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"> </script>
+    <script src="{{ url_for('static', filename='template.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+</head>
+<body>
+    <div class="container-xxl">
+        <div class="row" id="title">
+            <div class="col-11"><h1>SUBMIT ADMIN CODE TO ACTIVATE ADMIN MODE</h1></div>
+            <div class="col-1"><div class="notcheckbox"><a href={{ url_for('index') }}><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 14 14">
+                <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/>
+                </svg></a></div></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="alert alert-secondary" role="alert">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                        <h4>{{ message }}</h4>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class = "container-xxl">
+            <div class="row gx-2">
+                <div class="col-10">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="admincode" name="admincode"placeholder="　">
+                        <label for="admincode">Admin code</label>
+                    </div>
+                </div>
+                <div class="col-2" style="margin-top: 5px;">
+                    <button type="submit" class="btn btn-secondary" name="auth"><svg xmlns="http://www.w3.org/2000/svg" width="120" height="25" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                      </svg></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>

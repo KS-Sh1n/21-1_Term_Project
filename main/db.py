@@ -50,3 +50,7 @@ site_feed_query = (
     "link TEXT NOT NULL PRIMARY KEY,"
     "sitecolor TEXT NOT NULL,"
     "FOREIGN KEY(sitename) REFERENCES sitedata(sitename))")
+
+auth_data_query = (
+    "CREATE TABLE IF NOT EXISTS authdata "
+    "(admincode TEXT NOT NULL PRIMARY KEY)")

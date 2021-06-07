@@ -82,6 +82,7 @@ p#feed_link
 {
     height: 30px;
 }
+.adminonly,
 .box_hidden,
 .checkbox,
 .confirmreset

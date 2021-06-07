@@ -85,6 +85,11 @@ $(function()
         if ($('.alert').text().length != 80)
         {
             $('.alert').show();
+            setTimeout(() => { $('.alert').hide(); }, 3000);
+        }
+        if ($('.status').text() == "admin")
+        {
+            $('.adminonly').show();
         }
     })
     

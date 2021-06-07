@@ -2,7 +2,7 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from .scraper import update_feed
 from .db import _instance_path
@@ -23,13 +23,19 @@ def init_app():
     # Core application configuration
     app = Flask('__name__',
         static_folder= "main/static",
-        template_folder='main/templates')
+        template_folder='main/templates',
+        instance_relative_config=True)
+
+    # Development Config
     app.config.from_mapping(
         ENV = 'development', 
         DEBUG= True,
         DATABASE = os.path.join(_instance_path, 'data.db'),
         )
     app.secret_key = 'dev'
+    
+    # Production config
+    #app.config.from_pyfile('prodconfig.py', silent=True)
     
     # SQLAlchemy congifuration
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/data.db'
@@ -46,10 +52,11 @@ def init_app():
         print("No Table")
     
     # Initialize database, blueprint, and scheduler
-    from . import db, insert
+    from . import db, insert, auth
     alc_db.init_app(app)
     db.init_app(app)
     app.register_blueprint(insert.bp)
+    app.register_blueprint(auth.bp)
     scheduler = init_scheduler()
 
     # Main page template
@@ -58,7 +65,13 @@ def init_app():
         con = db.get_db()
         cur = con.cursor()
         sitefeed_result= []
-        
+
+        # Check admin or guest
+        if "admin" in session:
+            status = "admin"
+        else:
+            status = "guest"
+
         # Scheduler to scrape feed at every 0 / 30 minute
         scheduler.add_job(
         func= update_feed,
@@ -118,6 +131,6 @@ def init_app():
         con.close()
 
         # Return template page
-        return render_template('main.html', sitefeed = sitefeed_result, page = page, sorting = sorting)
+        return render_template('main.html', sitefeed = sitefeed_result, page = page, sorting = sorting, status = status)
 
     return app
