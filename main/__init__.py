@@ -65,6 +65,7 @@ def init_app():
         con = db.get_db()
         cur = con.cursor()
         sitefeed_result= []
+        work = ""
 
         # Check admin or guest
         if "admin" in session:
@@ -106,10 +107,17 @@ def init_app():
             try:
                 # Scrape button to get feeds from website
                 if "scrape" in request.form:
+                    work = update_feed()
+                    flash(work, 'success')
+                    con.commit()
+                    return redirect(url_for("index"))
+
+                    '''
                     update_feed()
                     con.commit()
                     flash("Feeds have been updated")
                     return redirect(url_for("index"))
+                    '''
 
                 # Delete button to remove feeds from table
                 # Appears after select button is clicked
@@ -123,7 +131,7 @@ def init_app():
             # Error message if any error occured
             except Exception as e:
                 msg = (str(e))
-                print(msg)
+                flash(msg)
 
         # Apply change and close connection
         con.commit()
@@ -131,6 +139,6 @@ def init_app():
         con.close()
 
         # Return template page
-        return render_template('main.html', sitefeed = sitefeed_result, page = page, sorting = sorting, status = status)
+        return render_template('main.html', sitefeed = sitefeed_result, page = page, sorting = sorting, status = status, work = work)
 
     return app

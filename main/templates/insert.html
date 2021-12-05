@@ -94,12 +94,14 @@
                     <label for="sitecolor" class="form-label">Choose your Color</label>
                     <input type="color" name="sitecolor" class="form-control form-control-color">
                 </div>
+                <!--
                 <div class="col-6">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="js_included">
-                        <label class="form-check-label" for="js_included">Check if a site uses JavaScript</label>
+                        <input class="form-check-input" type="checkbox" name="samelevel">
+                        <label class="form-check-label" for="samelevel">Postnum query on the same level?</label>
                     </div>
                 </div>
+                -->
             </div>
             <div class="row gx-2">
                 <div class="col-2">
@@ -149,7 +151,6 @@
                             <th>Title</th>
                             <th>Author</th>
                             <th>Color</th>
-                            <th>JS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,7 +166,6 @@
                                 <td>{{ i[6] }}</td>
                                 <td>{{ i[7] }}</td>
                                 <td>{{ i[8] }}</td>
-                                <td>{{ i[9] }}</td>
                             </tr>
                             {% endfor %}
                     </tbody>

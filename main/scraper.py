@@ -2,6 +2,7 @@ import os
 import requests
 import sqlite3
 import telegram
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 from re import compile
@@ -21,8 +22,18 @@ def tuple_to_sitedata_dict(**kwargs):
     """
     for key, value in kwargs.items():
         if type(value) is str and "," in value:
-            kwargs[key] = value.split(sep = ",")
+            kwargs[key] = value.split(sep="," )
     return kwargs
+def extract_post_number(href, query):
+    if query == "/":
+        postnum = [int(s) for s in href.split("/") if s.isdigit()][0]
+        return postnum
+    else:
+        postnum = [s for s in href.split("?")[1].split("&") if query in s][0]
+        return int(postnum[len(query) + 1:])
+
+# Obslete extract number function 
+    '''
 def extract_post_number(href, query):
     """ (str, str) -> int
 
@@ -33,6 +44,7 @@ def extract_post_number(href, query):
     """
     href_postnum_list = []
     href_postnum = 0
+
     # index of query inside of link string
     query_index = href.find(query)
     # if query is "no" and link includes no=123...
@@ -52,71 +64,91 @@ def extract_post_number(href, query):
         href_postnum += (href_postnum_list[i] * 10**i)
 
     return href_postnum
+    '''
+
 def update_feed():
-    # Telegram Bot Configuration
-    bot = telegram.Bot(token = '1822963809:AAEKMWyn9uBHXQ_m6D4yctWLcmC9bpsU8us')
-    chat_id = 1327186896
+    try:
+        # Telegram Bot Configuration
+        bot = telegram.Bot(token = '1822963809:AAEKMWyn9uBHXQ_m6D4yctWLcmC9bpsU8us')
+        chat_id = 1327186896
 
-    # Connect to sqlite3 DB
-    con = sqlite3.connect(os.path.join(_instance_path, 'data.db'))
-    cur = con.cursor()
-    URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
+        # Connect to sqlite3 DB
+        con = sqlite3.connect(os.path.join(_instance_path, 'data.db'))
+        cur = con.cursor()
+        URLs = cur.execute("SELECT * FROM sitedata").fetchall()  
 
-    # For debugging purpose
-    print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))  
+        # For debugging purpose
+        print("running scraper at {}...".format(datetime.now().strftime("%Y/%m/%d %H:%M:%S")))  
 
-    # To check hoy many new posts has been retrieved
-    new_post_index = 0
+        # To check hoy many new posts has been retrieved
+        new_post_index = 0
 
-    # Convert sitadata tuple to dictionary with keys
-    for url_tuple in URLs:
-        url = tuple_to_sitedata_dict(
-            sitename = url_tuple[0],
-            main_address = url_tuple[1],
-            scrape_address = url_tuple[2],
-            sitetype = url_tuple[3],
-            link_query = url_tuple[4],
-            postnum_query = url_tuple[5],
-            title_query = url_tuple[6],
-            author_query = url_tuple[7],
-            sitecolor = url_tuple[8],
-            js_included = url_tuple[9])
+        # Convert sitadata tuple to dictionary with keys
+        for url_tuple in URLs:
+            # Reset page count
+            page_count = 0
 
-        # Latest post number from DB for comparison
-        current_latest_postnum = cur.execute(
-            "SELECT postnum FROM sitefeed WHERE sitename = ? ORDER BY postnum DESC LIMIT 1", (url["sitename"],)).fetchone()
+            url = tuple_to_sitedata_dict(
+                sitename = url_tuple[0],
+                main_address = url_tuple[1],
+                scrape_address = url_tuple[2],
+                sitetype = url_tuple[3],
+                link_query = url_tuple[4],
+                postnum_query = url_tuple[5],
+                title_query = url_tuple[6],
+                author_query = url_tuple[7],
+                sitecolor = url_tuple[8])
 
-        # Send HTTP request to the given URL
-        # Retrieves the HTML data that server sends
-        page = requests.get(url["scrape_address"])
+            # Latest post number from DB for comparison
+            current_latest_postnum = cur.execute(
+                "SELECT postnum FROM sitefeed WHERE sitename = ? ORDER BY postnum DESC LIMIT 1", (url["sitename"],)).fetchone()
 
-        # Construct BeautifulSoup
-        bs = BeautifulSoup(page.content, 'html.parser')
+            # Using selenium
+            options = webdriver.FirefoxOptions()
+            options.binary = "/usr/lib/firefox/firefox"
+            options.headless = True
+            browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
 
-        #To identify feed link
-        bs_results = bs.find_all(class_ = url["link_query"])
-
-        # Dive into each page element
-        for page in bs_results:
+            # Open browser
+            browser.get(url["scrape_address"])
+            time.sleep(5)
+            bs = BeautifulSoup(browser.page_source, 'html.parser')
             
-            temp_link = page.find('a', href = compile(url["postnum_query"]))
+            # After getting page source, close browser
+            browser.close()
 
-            # Filter out garbage value
-            if temp_link is None:
-                continue
+            #To identify feed link
+            bs_results = bs.find_all(class_ = url["link_query"])
 
-            page_link = url["main_address"] + temp_link['href']
+            # Link query None-check procedure
+            if bs_results == []:
+                raise Exception("Link query")
 
-            page_postnum = extract_post_number(page_link, url["postnum_query"])
+            # Dive into each page element
+            for page in bs_results:
+                temp_link = page.find('a', href = compile(url["postnum_query"]))
 
-            # Control flow before going deep into the link to save time
-            if (current_latest_postnum is not None and page_postnum <= current_latest_postnum[0]):
-                print('No more new feeds for {0}\n'.format(url["sitename"]))
-                break
+                # Filter garbage value for khu sites
+                if temp_link is None:
+                    continue
+                
+                if url["scrape_address"] == url["main_address"]:
+                    page_link = temp_link['href'].strip()
+                else:
+                    page_link = url["main_address"] + temp_link['href'].strip()
 
-            if(url["js_included"] == "Yes"): # If a site uses Javascript
+                page_postnum = extract_post_number(page_link, url["postnum_query"])
+
+                # Control flow before going deep into the link to save time
+                if (current_latest_postnum is not None and page_postnum <= current_latest_postnum[0]):
+                    print('No more new feeds for {0}\n'.format(url["sitename"]))
+                    break
+
                 # Using selenium
-                browser = webdriver.Edge()
+                options = webdriver.FirefoxOptions()
+                options.binary = "/usr/lib/firefox/firefox"
+                options.headless = True
+                browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
 
                 # Open browser
                 browser.get(page_link)
@@ -125,117 +157,138 @@ def update_feed():
                 # After getting page source, close browser
                 browser.close()
 
-            else: # No Javascript
-                # Send HTTP request to the given URL
-                # Retrieves the HTML data that server sends
-                link_resp = requests.get(page_link)
+                # Find postdate, title, author in the link
+                page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
+                page_title = bs2.find(class_ = url["title_query"]).text.strip()
+                # Title None-check procedure
+                if page_title is None:
+                    raise Exception("Title")
 
-                # Construct BeautifulSoup
-                bs2 = BeautifulSoup(link_resp.content, 'html.parser')
+                page_author = bs2.find(class_ = url["author_query"]).text.strip()
+                page_author = page_author.split()[0]
 
-            # Find title, author in the link
-            page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
-            page_title = bs2.find(class_ = url["title_query"]).text.strip()
-            page_author = bs2.find(class_ = url["author_query"]).text.strip()
+                # Author None-check procedure
+                if page_title is None:
+                    raise Exception("Author")
+                        
+                insert_feed_query = (
+                    "INSERT INTO sitefeed "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                )
 
-            print(page_postnum)
-            print(page_postdate)
-            print(page_title)
-            print(page_author)
-            print(page_link)
+                insert_tuple = (
+                url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link, url["sitecolor"])
 
-            if None in (page_title, temp_link):
-                print('None detected among title, and link')
-                continue
-                    
-            insert_feed_query = (
-                "INSERT INTO sitefeed "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            )
+                # Add new feed to the Table
+                cur.execute(insert_feed_query, insert_tuple)
+                # Apply changes to DB
+                con.commit()
 
-            insert_tuple = (
-            url["sitename"], url["sitetype"], page_postdate, page_postnum, page_title, page_author, page_link, url["sitecolor"])
+                # replace < or > so that HTML parser understands as text
+                page_sitename = url['sitename'].upper()
 
-            bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(
-                url["sitename"].upper(), page_author, page_title, page_link)
+                temp_text = [page_sitename, page_author, page_title]
+                for i in range(len(temp_text)):
+                    if "<" in temp_text[i] or ">" in temp_text[i]:
+                        temp_text[i] = temp_text[i].replace("<", "&lt;")
+                        temp_text[i] = temp_text[i].replace(">", "&gt;")
 
-            # Add new feed to the Table
-            cur.execute(insert_feed_query, insert_tuple)
-            # Apply changes to DB
-            con.commit()
+                bot_text = '<b>{0}</b>\n  {1}\n\n<b>{2}</b>\n\n <a href = "{3}">Link</a>'.format(
+                    temp_text[0], temp_text[1], temp_text[2], page_link)
 
-            # Send real-time notification
-            bot.send_message(
-                chat_id = chat_id, 
-                text= bot_text,
-                parse_mode = 'HTML')
+                # Send real-time notification
+                bot.send_message(
+                    chat_id = chat_id, 
+                    text= bot_text,
+                    parse_mode = 'HTML')
 
-            new_post_index += 1
-            
-    # Close session
-    cur.close()
-    con.close()
+                new_post_index += 1
+                page_count += 1
+                if (page_count) >= 5:
+                    break
+                
+        # Close session
+        cur.close()
+        con.close()
 
-    # How many new post has been retrieved
-    if (new_post_index == 1):
-        print(new_post_index, "new feed discovered in this iteration\n")
-    elif (new_post_index > 1):
-        print(new_post_index, "new feeds discovered in this iteration\n")
-    else:
-        print("no new feed discovered in this iteration\n")
+        # How many new post has been retrieved
+        prepending_text = "Manual update procedure finished.\n\n"
+        if (new_post_index == 1):
+            return prepending_text + str(new_post_index) + " new feed discovered in this iteration"
+        elif (new_post_index > 1):
+            return prepending_text + str(new_post_index) + " new feeds discovered in this iteration"
+        else:
+            return prepending_text + "No new feed discovered in this iteration"
+        
+    except Exception as e:
+        prepending_text = "Manual update procedure failed while scraping {0}.\n".format(url["sitename"])
+        if str(e) in ["Link query", "Title", "Post number", "Author"]:
+            return prepending_text + "None returned while scraping {0}.".format(str(e))
+        else:
+            return prepending_text + str(e)
 def test_feed(url):
     try:
-        # Send HTTP request to the given URL
-        # Retrieves the HTML data that server sends
-        page = requests.get(url["scrape_address"])
+        # Using selenium
+        options = webdriver.FirefoxOptions()
+        options.binary = "/usr/lib/firefox/firefox"
+        options.headless = True
+        browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
 
-        # Construct BeautifulSoup
-        bs = BeautifulSoup(page.content, 'html.parser')
+        # Open browser
+        browser.get(url["scrape_address"])
+        time.sleep(2)
+        bs = BeautifulSoup(browser.page_source, 'html.parser')
 
-        #To identify feed link
+        # After getting page source, close browser
+        browser.close()
+
+        # Page address None-check procedure
+        if bs is None:
+            return "No result returned using current page address."
+
+        # To identify feed link
         bs_results = bs.find_all(class_ = url["link_query"])
+        # Link query None-check procedure
+        if bs_results is None:
+            return "No result returned using current query for link."
 
         for page in bs_results:            
             temp_link = page.find('a', href = compile(url["postnum_query"]))
-
-            # Filter out garbage value
+            
+            # Filter garbage value for khu sites
             if temp_link is None:
                 continue
 
-            page_link = url["main_address"] + temp_link['href']
+            if url["scrape_address"] == url["main_address"]:
+                page_link = temp_link['href'].strip()
+            else:
+                page_link = url["main_address"] + temp_link['href'].strip()
 
-            page_postnum = extract_post_number(page_link, url["postnum_query"])
+            options = webdriver.FirefoxOptions()
+            options.binary = "/usr/lib/firefox/firefox"
+            options.headless = True
+            browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
 
-            if("js_included" in url.keys()): # If a site uses Javascript
-                # Using selenium
-                browser = webdriver.Edge()
+            # Open browser
+            browser.get(page_link)
+            bs2 = BeautifulSoup(browser.page_source, 'html.parser')
 
-                # Open browser
-                browser.get(page_link)
-                bs2 = BeautifulSoup(browser.page_source, 'html.parser')
-
-                # After getting page source, close browser
-                browser.close()
-
-            else: # No Javascript
-                # Send HTTP request to the given URL
-                # Retrieves the HTML data that server sends
-                link_resp = requests.get(page_link)
-
-                # Construct BeautifulSoup
-                bs2 = BeautifulSoup(link_resp.content, 'html.parser')
+            # After getting page source, close browser
+            browser.close()
 
             # Find title, author in the link
-            page_postdate = datetime.now().strftime("%Y/%m/%d %H:%M")
             page_title = bs2.find(class_ = url["title_query"]).text.strip()
+            # Title None-check procedure
+            if page_title is None:
+                return "No result returned using current query for title."
+
             page_author = bs2.find(class_ = url["author_query"]).text.strip()
+            page_author = page_author.split()[0]
 
-            print(page_postnum)
-            print(page_postdate)
-            print(page_title)
-            print(page_author)
-            print(page_link)
+            # Author None-check procedure
+            if page_title is None:
+                return "No result returned using current query for author."
+
             return "success"
-
     except Exception as e:
         return(str(e))

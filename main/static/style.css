@@ -1,4 +1,4 @@
-*
+df*
 {
     text-shadow: 1px 1px 1px rgb(0, 0, 0);
 }
@@ -85,7 +85,8 @@ p#feed_link
 .adminonly,
 .box_hidden,
 .checkbox,
-.confirmreset
+.confirmreset/*,
+.current_work*/
 {
     display: none;
 }

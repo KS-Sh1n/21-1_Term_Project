@@ -70,6 +70,8 @@ $(function()
 
     $(window).resize(function()
     {
+        // Debugging purpose
+        //console.log($(this).width())
         delay(function()
         {
             if ($(this).width() < 768)
@@ -79,9 +81,10 @@ $(function()
         }, 200);
     });
 
-    $(window).on('load', function()
+    $(document).ready(function()
     {
-        console.log($('.alert').text().length);
+        // Debugging purpose
+        //console.log($('.alert').text().length);
         if ($('.alert').text().length != 80)
         {
             $('.alert').show();

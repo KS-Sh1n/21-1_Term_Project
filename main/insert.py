@@ -79,7 +79,6 @@ def insert():
                 # Test scraping to assess validity
                 test = test_feed(request.form)
                 if test != "success":
-                    flash("Test scraping with entered information failed. Please double-check what you entered and try again.")
                     flash(test)
                 else:
                     cur.executemany("INSERT INTO sitedata VALUES "
