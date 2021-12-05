@@ -8,10 +8,12 @@ from .scraper import update_feed
 from .db import _instance_path
 from .insert import get_checked_site
 
+db_location = ""
+
 def init_scheduler():
     # APScheduler Configuration
     jobstores = {
-        'default' : SQLAlchemyJobStore(url = 'sqlite:///instance/data.db')
+        'default' : SQLAlchemyJobStore(url = 'db_location')
     }
     executors = {
         'default' : ThreadPoolExecutor(20)
@@ -38,7 +40,7 @@ def init_app():
     #app.config.from_pyfile('prodconfig.py', silent=True)
     
     # SQLAlchemy congifuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/data.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'db_url'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     alc_db = SQLAlchemy(app)
     alc_db.Model.metadata.reflect(bind=alc_db.engine)

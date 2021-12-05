@@ -3,7 +3,7 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-_instance_path = '/home/ks/myproj/instance'
+_instance_path = ''
 
 def get_db():
     db = getattr(g, '_database', None)

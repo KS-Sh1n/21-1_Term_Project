@@ -32,45 +32,13 @@ def extract_post_number(href, query):
         postnum = [s for s in href.split("?")[1].split("&") if query in s][0]
         return int(postnum[len(query) + 1:])
 
-# Obslete extract number function 
-    '''
-def extract_post_number(href, query):
-    """ (str, str) -> int
-
-    Extract post number from site link, with a predetermined query to specify location of post number.
-
-    >>> extract_post_number("https://www.aaaaa.com/?no=123456", "no")
-    123456
-    """
-    href_postnum_list = []
-    href_postnum = 0
-
-    # index of query inside of link string
-    query_index = href.find(query)
-    # if query is "no" and link includes no=123...
-    # search_start_index points to 1
-    search_start_index = query_index + len(query) + 1
-
-    for i in range(int(search_start_index), len(href)):
-        if href[i].isdigit():
-            # Temporary reversed list of post number
-            href_postnum_list.insert(0, int(href[i]))
-        else:
-            # Finish searching upon reaching nondigit
-            break
-
-    # Return ordered int from reversed list
-    for i in range(len(href_postnum_list)):
-        href_postnum += (href_postnum_list[i] * 10**i)
-
-    return href_postnum
-    '''
-
+firefox_loc = "/"
+geckodriver_loc = "/"
 def update_feed():
     try:
         # Telegram Bot Configuration
-        bot = telegram.Bot(token = '1822963809:AAEKMWyn9uBHXQ_m6D4yctWLcmC9bpsU8us')
-        chat_id = 1327186896
+        bot = telegram.Bot(token = 'token')
+        chat_id = 1
 
         # Connect to sqlite3 DB
         con = sqlite3.connect(os.path.join(_instance_path, 'data.db'))
@@ -105,9 +73,9 @@ def update_feed():
 
             # Using selenium
             options = webdriver.FirefoxOptions()
-            options.binary = "/usr/lib/firefox/firefox"
+            options.binary = firefox_loc
             options.headless = True
-            browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
+            browser = webdriver.Firefox(executable_path=geckodriver_loc, firefox_options=options)
 
             # Open browser
             browser.get(url["scrape_address"])
@@ -146,9 +114,9 @@ def update_feed():
 
                 # Using selenium
                 options = webdriver.FirefoxOptions()
-                options.binary = "/usr/lib/firefox/firefox"
+                options.binary = firefox_loc
                 options.headless = True
-                browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
+                browser = webdriver.Firefox(executable_path=geckodriver_loc, firefox_options=options)
 
                 # Open browser
                 browser.get(page_link)
@@ -230,9 +198,9 @@ def test_feed(url):
     try:
         # Using selenium
         options = webdriver.FirefoxOptions()
-        options.binary = "/usr/lib/firefox/firefox"
+        options.binary = firefox_loc
         options.headless = True
-        browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
+        browser = webdriver.Firefox(executable_path=geckodriver_loc, firefox_options=options)
 
         # Open browser
         browser.get(url["scrape_address"])
@@ -265,9 +233,9 @@ def test_feed(url):
                 page_link = url["main_address"] + temp_link['href'].strip()
 
             options = webdriver.FirefoxOptions()
-            options.binary = "/usr/lib/firefox/firefox"
+            options.binary = firefox_loc
             options.headless = True
-            browser = webdriver.Firefox(executable_path="/usr/local/bin/geckodriver", firefox_options=options)
+            browser = webdriver.Firefox(executable_path=geckodriver_loc, firefox_options=options)
 
             # Open browser
             browser.get(page_link)
